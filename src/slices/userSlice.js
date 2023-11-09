@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import appApiSlice from "./appApiSlice";
 
 let initialState = localStorage.getItem("userInfo") ? JSON.parse(localStorage.getItem("userInfo")) : null;
-const userToken = JSON.parse(localStorage.getItem("userInfo")).token
+let userToken = localStorage.getItem("userInfo") ? JSON.parse(localStorage.getItem("userInfo")).token : null;
 
 const userSlice = createSlice({
     name: "userSlice",
