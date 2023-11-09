@@ -32,7 +32,7 @@ const Login = () => {
               <h1 className='text-slate-900 font-lobster text-4xl text-center sm:text-3xl lg:text-4xl'>Login</h1>
               <input type="email" placeholder='Enter your email' className='border-b border-slate-300 p-1 outline-none' onChange={e=>dispatch({type:'EMAIL',email:e.target.value})}/>
               <input type="password" placeholder='Enter your password' className='border-b border-slate-300 p-1 outline-none' onChange={e=>dispatch({type:'PASSWORD',password:e.target.value})}/>
-              <button disabled={isLoading} className='border border-slate-900 py-1 w-1/2 mx-auto text-xl font-lobster rounded-sm cursor-pointer hover:bg-slate-900 hover:text-slate-100 sm:text-sm sm:py-2 lg:text-[25px]'>Login</button>
+              <button disabled={isLoading} className='border border-slate-900 py-1 w-1/2 mx-auto text-xl font-lobster rounded-sm hover:bg-slate-900 hover:text-slate-100 sm:text-sm sm:py-2 lg:text-[25px]'>Login</button>
             </form>
             <div className='text-sm hidden max-sm:flex items-center gap-1 mt-5 font-lobster tracking-wider'>
               <span className=' whitespace-nowrap'>You don't have an account ?</span> <Link to="/register"><button className=' underline text-blue-600'>Register</button></Link>
