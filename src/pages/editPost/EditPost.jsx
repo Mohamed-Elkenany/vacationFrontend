@@ -58,7 +58,7 @@ const EditPost = () => {
         setShowImage(newArrayOfFile)
     }, [selectFile]);
     useEffect(() => {
-        if (localStorage.getItem("Theme") === "dark") {
+        if (localStorage.getItem("theme") === "dark") {
             document.documentElement.classList.add("dark");
         } else {
             document.documentElement.classList.remove("dark");
