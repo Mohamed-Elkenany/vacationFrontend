@@ -156,7 +156,7 @@ const InfoProfile = ({ suggestConsumer }) => {
                     }
                     <div className='absolute -bottom-[35px] left-1/2 -translate-x-1/2 w-[70px] h-[70px] rounded-full p-1 border border-purple-800'>
                         <div className="overlay relative bg-black w-full h-full z-50 rounded-full">
-                            <label className={`absolute -bottom-2 left-0 w-6 h-6 rounded-full text-slate-300 text-opacity-70 bg-opacity-70 bg-purple-700 flex items-center justify-center ${loadingUploadAvatar ? 'cursor-default' : 'cursor-pointer'}`} htmlFor="uploadAvatar"><AddIcon /></label>
+                            {userProfile?._id === mainUserId && <label className={`absolute -bottom-2 left-0 w-6 h-6 rounded-full text-slate-300 text-opacity-70 bg-opacity-70 bg-purple-700 flex items-center justify-center ${loadingUploadAvatar ? 'cursor-default' : 'cursor-pointer'}`} htmlFor="uploadAvatar"><AddIcon /></label>}
                             <input disabled={loadingUploadAvatar} type="file" id="uploadAvatar" className='hidden' onChange={handleUploadAvatar}/>
                             <img className='h-full w-full rounded-full object-cover object-left-top z-10' src={avatar?.url} alt="user" />
                         </div>
