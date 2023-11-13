@@ -95,7 +95,7 @@ const Post = ({ post, handleListConsumer, userId, suggestConsumer, deletePost })
           post?.imageUrl?.length > 0
           &&
           <div ref={sliderContainerRef} className="slider-container w-full max-h-full bg-white dark:bg-gray-800 overflow-hidden flex flex-col">
-            <div ref={sliderRef} className="slider max-w-full  flex">
+            <div ref={sliderRef} className="slider max-w-full flex">
                 <ImagePost images={post.imageUrl} />
             </div>
           </div>

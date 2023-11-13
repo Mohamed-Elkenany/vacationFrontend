@@ -11,7 +11,7 @@ const ListOfLikes = ({ userLike }) => {
                 <img className='w-full h-full rounded-full object-cover ' src={userLike.avatar.url} alt="user" />
             </div>
             <div>
-                <h1 className='font-lobster tracking-wider text-md text-slate-600 dark:text-slate-300'>{userLike.fName} { userLike.lName }</h1>
+                <h1 className='font-lobster tracking-wider text-md text-slate-600 dark:text-slate-300'>{userLike.userName}</h1>
                 <div className="flex items-center gap-1">
                     <span className='font-lobster tracking-wider text-xs text-slate-600 dark:text-slate-400'>{userLike.followers.length} follower</span>
                     <span className='font-lobster tracking-wider text-xs text-slate-600 dark:text-slate-400'>{userLike.following.length} following</span>
