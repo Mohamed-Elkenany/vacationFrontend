@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTogglefollowMutation, useGetUserByIdMutation } from '../../slices/appApiSlice';
+import { toggleFollowButton } from "../../slices/buttonFollowSclice";
+import { useDispatch } from 'react-redux';
 const Button = ({ userId, setUser, user, suggestConsumer }) => {
+  const dispatch = useDispatch();
   const mainUser = JSON.parse(localStorage.getItem("userInfo")).user;
   const [toggleFollow, { isSuccess, isLoading }] = useTogglefollowMutation();
   const [getUserById] = useGetUserByIdMutation();
@@ -10,13 +13,7 @@ const Button = ({ userId, setUser, user, suggestConsumer }) => {
       .then(res => res.data)
       .then(result => {
         setUser(result.userFollow);
-        // if (result.user.following.includes(userId)) {
-        //   setFollow("Unfollow")
-        // }else if(result.user.followers.includes(userId) && !result.user.following.includes(userId)){
-        //   setFollow("Follow back");
-        // } else {
-        //   setFollow("Follow");
-        // }
+        dispatch({ type: toggleFollowButton, payload: result.user });
       });
   };
   useEffect(() => {
@@ -40,7 +37,9 @@ const Button = ({ userId, setUser, user, suggestConsumer }) => {
     suggestConsumer?.setSucces(isSuccess);
   }, [isSuccess]);
   useEffect(() => {
-    
+    getUserById(mainUser._id)
+      .then(res => res.data)
+      .then(result => dispatch({ type: toggleFollowButton, payload: result }));
   }, []);
   return (
     <div>

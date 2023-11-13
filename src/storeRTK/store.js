@@ -6,7 +6,8 @@ import suggestSlice from "../slices/suggestSlice";
 import postsSlice from "../slices/postsSlice";
 import postSlice from "../slices/postSlice";
 import userProfile from "../slices/userProfile";
-import updateprofile from "../slices/updateSlice"
+import updateprofile from "../slices/updateSlice";
+import buttonToggleFollowSlice from "../slices/buttonFollowSclice";
 const store = configureStore({
     reducer: {
         user: userSlice,
@@ -15,6 +16,7 @@ const store = configureStore({
         post: postSlice,
         userProfile: userProfile,
         update: updateprofile,
+        toggleFollow: buttonToggleFollowSlice,
         [appApiSlice.reducerPath]: appApiSlice.reducer,
     },
     middleware: [thunk, appApiSlice.middleware],

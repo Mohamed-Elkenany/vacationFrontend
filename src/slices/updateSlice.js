@@ -2,9 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     updateAvatarInfo: false,
+    updateBanner: false,
     updateAvatar: false,
     deleteAvatar: false,
-    updateBanner: false,
     deleteBanner: false,
     updateBio: false,
 };
@@ -12,7 +12,7 @@ const updateprofile = createSlice({
     name: "updateprofile",
     initialState,
     reducers: {
-        updateAvatarInfo: (state, action) => {
+        updateAvatarInfo: (state, action )  => {
             return {
                 ...state,
                 updateAvatarInfo: action.payload,

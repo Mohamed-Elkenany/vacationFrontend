@@ -3,22 +3,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
-import { useGetUserProfileMutation, useUploadUserAvatarMutation, useUploadUserBannerMutation } from '../../../../slices/appApiSlice';
-import { postLengthContext } from '../Middleprofile';
+import { useGetPostProfileMutation, useGetUserProfileMutation, useUploadUserAvatarMutation, useUploadUserBannerMutation } from '../../../../slices/appApiSlice';
 import Follower from '../../../followers/follower/Follower';
-import { useParams } from 'react-router-dom';
-import { updateAvatar, updateAvatarInfo, updateBanner } from "../../../../slices/updateSlice";
-const InfoProfile = ({ suggestConsumer }) => {
+import { updateAvatarInfo, updateBanner } from "../../../../slices/updateSlice";
+const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) => {
     const DISpatch = useDispatch();
     const updates = useSelector(state => state.update);
-    const { id: userId } = useParams();
     const [userProfile, setUserProfile] = useState();
     const [banner, setBanner] = useState();
     const [avatar, setAvatar] = useState();
+    const [BIO, setBIO] = useState();
+    const [countOfPost, setCountOfPost] = useState('');
     const mainUserId = JSON.parse(localStorage.getItem("userInfo")).user._id;
     const postLengthConsumer = useContext(postLengthContext);
     const [uploadBanner, { isLoading, isSuccess }] = useUploadUserBannerMutation();
     const [uploadAvatar, { isLoading: loadingUploadAvatar, isSuccess: successUploadAvatar }] = useUploadUserAvatarMutation();
+    const [getprofilePost, { isLoading: loadPostProfile, isSuccess: successPostProfile }] = useGetPostProfileMutation();
     const [user] = useGetUserProfileMutation();
     const [searchFollower, setSearchFollower] = useState('');
     const initialState = {
@@ -81,6 +81,7 @@ const InfoProfile = ({ suggestConsumer }) => {
                 setUserProfile(resulte)
                 setBanner(resulte.banner)
                 setAvatar(resulte.avatar)
+                setBIO(resulte.bio)
                 suggestConsumer.setBIO(resulte.bio)
             });
     }, [ suggestConsumer?.success, userId]);
@@ -88,7 +89,14 @@ const InfoProfile = ({ suggestConsumer }) => {
         user(userId)
             .then(res => res.data)
             .then(resulte => {
-                setAvatar(resulte.avatar)
+                setBIO(resulte.bio)
+            });
+    }, [ suggestConsumer?.isSuccessUpdateBIO]);
+    useEffect(() => {
+        user(userId)
+            .then(res => res.data)
+            .then(resulte => {
+                setAvatar(resulte?.avatar)
             });
     }, [successUploadAvatar, updates.updateAvatar, updates.deleteAvatar]);
     useEffect(() => {
@@ -98,13 +106,22 @@ const InfoProfile = ({ suggestConsumer }) => {
         user(userId)
             .then(res => res.data)
             .then(resulte => {
-                setBanner(resulte.banner)
+                setBanner(resulte?.banner)
                 DISpatch({ type: updateBanner, payload: isSuccess });
             });
     }, [isSuccess, updates.updateBanner,updates.deleteBanner]);
     useEffect(() => {
         dispatch({ type: "default" })
     }, [userId]);
+    useEffect(() => {
+    getprofilePost(userId)
+        .then(res => res.data)
+      .then(resulte => {
+        setCountOfPost(resulte.posts)
+        postLengthConsumer.setPostLength(resulte.posts?.length);
+      })
+      .catch(error => console.log(error));
+  }, [userId, getprofilePost]);
     return (
         <div>
             <div className='bg-white dark:bg-gray-800 w-full h-auto rounded-md shadow-md'>
@@ -156,7 +173,10 @@ const InfoProfile = ({ suggestConsumer }) => {
                     }
                     <div className='absolute -bottom-[35px] left-1/2 -translate-x-1/2 w-[70px] h-[70px] rounded-full p-1 border border-purple-800'>
                         <div className="overlay relative bg-black w-full h-full z-50 rounded-full">
-                            {userProfile?._id === mainUserId && <label className={`absolute -bottom-2 left-0 w-6 h-6 rounded-full text-slate-300 text-opacity-70 bg-opacity-70 bg-purple-700 flex items-center justify-center ${loadingUploadAvatar ? 'cursor-default' : 'cursor-pointer'}`} htmlFor="uploadAvatar"><AddIcon /></label>}
+                            {
+                                (userProfile?._id === mainUserId && !homePage) &&
+                            <label className={`absolute -bottom-2 left-0 w-6 h-6 rounded-full text-slate-300 text-opacity-70 bg-opacity-70 bg-purple-700 flex items-center justify-center ${loadingUploadAvatar ? 'cursor-default' : 'cursor-pointer'}`} htmlFor="uploadAvatar"><AddIcon /></label>
+                            }
                             <input disabled={loadingUploadAvatar} type="file" id="uploadAvatar" className='hidden' onChange={handleUploadAvatar}/>
                             <img className='h-full w-full rounded-full object-cover object-left-top z-10' src={avatar?.url} alt="user" />
                         </div>
@@ -167,13 +187,13 @@ const InfoProfile = ({ suggestConsumer }) => {
                     {
                         userProfile?.bio && <div className='flex items-start gap-1 text-purple-700 dark:text-slate-400 text-xs font-lobster tracking-wider px-1 my-1'>
                             <span className='whitespace-nowrap'>BIO : </span>
-                            <span className=''>{userProfile?.bio}</span>
+                            <span className=''>{BIO}</span>
                         </div>
                     }
                     <div className='px-8 mt-2'>
                         <div className='border-t dark:border-slate-600 flex items-center justify-around py-1'>
                             <div className='font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center border-r dark:border-slate-600 w-full h-full'>
-                                <span className='max-md:hidden'>{userProfile?.followers.length}</span>
+                                <span className='max-md:hidden'>{userProfile?.followers?.length}</span>
                                 <span className='max-md:hidden'>Followers</span>
                                 <button className="md:hidden font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center border-r dark:border-slate-600 w-full h-full" onClick={() => dispatch({ type: "Followers" })}>
                                     <span>{userProfile?.followers.length}</span>
@@ -181,15 +201,15 @@ const InfoProfile = ({ suggestConsumer }) => {
                                 </button>
                             </div>
                             <div className='font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center border-r dark:border-slate-600 w-full h-full'>
-                                <span className='max-md:hidden'>{userProfile?.following.length}</span>
+                                <span className='max-md:hidden'>{userProfile?.following?.length}</span>
                                 <span className='max-md:hidden'>Following</span>
                                 <button className="md:hidden font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center border-r dark:border-slate-600 w-full h-full" onClick={() => dispatch({ type: "Following" })}>
-                                    <span>{userProfile?.following.length}</span>
+                                    <span>{userProfile?.following?.length}</span>
                                     <span>Following</span>
                                 </button>
                             </div>
                             <div className='font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center  w-full h-full'>
-                                <span>{postLengthConsumer.postLength}</span>
+                                <span>{countOfPost?.length > 0 ? countOfPost.length : '0'}</span>
                                 <span>Posts</span>
                             </div>
                         </div>

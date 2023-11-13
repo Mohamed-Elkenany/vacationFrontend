@@ -2,19 +2,23 @@ import React, { useEffect, useReducer } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLoginMutation } from '../../slices/appApiSlice';
 import { loginInitState, reducer } from '../../services/LoginREducer';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 const Login = () => {
   const navigate =useNavigate();
   const [state, dispatch] = useReducer(reducer, loginInitState);
   const { email,password } = state;
   const [login, { error, isLoading, isSuccess }] = useLoginMutation();
   const user = useSelector(state => state.user);
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    login({ email, password });
+    await login({ email, password })
+    .then(res=>res.data)
+    .then(result=>{
+      console.log(result);
+    });
   }
   useEffect(() => {
-    user && navigate('/')
+    user && navigate('/');
   },[user])
   return (
     <div className='login w-full min-h-screen bg-slate-100 flex items-center justify-center max-sm:px-[50px] sm:px-[30px] lg:px-0'>

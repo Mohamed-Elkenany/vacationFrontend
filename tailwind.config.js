@@ -20,8 +20,7 @@ module.exports = {
         container:"1440px"
       },
       fontFamily: {
-        lobster: "Lobster Two",
-        great_vibes:"Great Vibes",
+        lobster: ['Cairo', 'sans-serif'],
       },
     },
   },

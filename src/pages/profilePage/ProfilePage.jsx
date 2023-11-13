@@ -14,10 +14,11 @@ const ProfilePage = ({socket}) => {
   const USER = JSON.parse(localStorage.getItem("userInfo")).user;
   const [postById] = useGetPostByIdMutation();
   const [user] = useGetUserProfileMutation();
-  const [UpdateBIO, { isLoading, isSuccess }] = useUpdateUserProfileMutation();
+  const [UpdateBIO, { isLoading, isSuccess: isSuccessUpdateBIO }] = useUpdateUserProfileMutation();
   const [showLikeList, setShowLikeList] = useState(false);
   const [updateBIO, setUpdateBIO] = useState(false);
-  const [BIO, setBIO] = useState("");
+  const [BIO, setBIO] = useState();
+  const [mainBIO, setMainBIO] = useState("");
   const newPost = useSelector(state => state.post);
   const [listOfLike, setListOfLike] = useState([]);
   const [success, setSucces] = useState(false);
@@ -27,7 +28,11 @@ const ProfilePage = ({socket}) => {
     setSucces,
     setShowLikeList,
     setUpdateBIO,
-    setBIO
+    mainBIO, 
+    setMainBIO,
+    BIO,
+    setBIO,
+    isSuccessUpdateBIO
   };
   const handleListLike = async (postId) => {
     await postById(postId)
@@ -48,7 +53,7 @@ const ProfilePage = ({socket}) => {
   }, [id]);
   useLayoutEffect(() => {
     setUpdateBIO(false);
-  },[isSuccess])
+  },[isSuccessUpdateBIO])
   return (
     <div className='profilePage min-h-screen max-md:px-0 w-full dark:bg-transparent max-lg:px-1 px-4 flex'>
       {

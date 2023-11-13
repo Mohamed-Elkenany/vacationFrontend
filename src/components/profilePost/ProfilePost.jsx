@@ -21,8 +21,8 @@ const ProfilePost = ({ handleListConsumer, suggestConsumer }) => {
     getprofilePost(id)
       .then(res => res.data)
       .then(resulte => {
-        setPosts(resulte.posts);
-        postLengthConsumer.setPostLength(resulte.posts?.length);
+        setPosts(resulte?.posts);
+        postLengthConsumer.setPostLength(resulte?.posts?.length);
       })
       .catch(error => console.log(error));
   }, [id, getprofilePost]);

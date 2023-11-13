@@ -1,0 +1,13 @@
+{
+                    images.map((image, index) => (
+                        image.url.endsWith(".mp4") ?
+                            <div key={index} className="item max-w-full">
+                                <video src={image.url} className='max-w-full object-center' autoPlay={true} loop muted />
+                            </div>
+                            :
+                            <div key={index} className="item max-w-full h-full relative">
+                                <div className="overlay absolute top-0 left-0 bg-black w-full h-full bg-opacity-[0.01] select-none"></div>
+                                <img src={image.url} alt='Poster' className='max-w-full h-full object-fill' />
+                            </div>
+                    ))
+                }

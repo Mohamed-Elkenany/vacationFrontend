@@ -72,4 +72,8 @@
     .LikeIcon{
       transform: rotateY(180deg);
     }
+    .containerPoster .active{
+      padding:5px;
+      border:2px solid rgb(126, 34, 206);
+    }
 }

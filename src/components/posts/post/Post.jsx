@@ -7,11 +7,13 @@ import ThumbUpOffAlt from '@mui/icons-material/ThumbUpOffAlt';
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import Comments from '../../comments/Comments';
-import { useGetUserProfileMutation, useToggleLikePostMutation } from '../../../slices/appApiSlice';
+import { useGetUserByIdMutation, useToggleLikePostMutation } from '../../../slices/appApiSlice';
 import  moment  from "moment";
 import { listLike } from '../../../slices/postSlice';
 import { useDispatch, useSelector } from 'react-redux';
-const Post = ({ post, handleListConsumer, suggestConsumer, deletePost }) => {
+import ImagePost from '../../imagePost/ImagePost';
+const Post = ({ post, handleListConsumer, userId, suggestConsumer, deletePost }) => {
+  const updateAvatar = useSelector(state => state.update);
   const settingPostRef = useRef();
   const sliderContainerRef = useRef();
   const sliderRef = useRef();
@@ -21,7 +23,7 @@ const Post = ({ post, handleListConsumer, suggestConsumer, deletePost }) => {
   const dispatch = useDispatch();
   const mainUser = JSON.parse(localStorage.getItem("userInfo")).user;
   const [toggleLike, { isSuccess }] = useToggleLikePostMutation();
-  const [getUser] = useGetUserProfileMutation();
+  const [getUserById] = useGetUserByIdMutation();
   const [settingPost, setSettingPost] = useState(false);
   const [addLike, setAddLike] = useState(false);
   const [likeList, setLikeList] = useState(post?.like);
@@ -31,13 +33,14 @@ const Post = ({ post, handleListConsumer, suggestConsumer, deletePost }) => {
   }
   const commentsPostContext = createContext(value);
   const commentsPostConSumer = useContext(commentsPostContext);
+  const [userAvatar, setUserAvatar] = useState();
   const [addComment, setAddComment] = useState(false);
   const likeAtPost = async (postId, type) => {
     const newData = await toggleLike(post._id)
       .then(res => res.data)
       .then(result => result.like);
     setLikeList(newData);
-    if (newData.find(user=>user._id === mainUser._id)) {
+    if (newData.find(user => user._id === mainUser._id)) {
       suggestConsumer.socket?.emit("event", {
         sender: mainUser,
         receiver: post,
@@ -60,62 +63,57 @@ const Post = ({ post, handleListConsumer, suggestConsumer, deletePost }) => {
     }
     setCommentList(post.comments);
   }, []);
+  useEffect(() => {
+    getUserById(userId)
+      .then(res => res.data)
+      .then(result => setUserAvatar(result?.avatar));
+  }, [updateAvatar.deleteAvatar, updateAvatar.updateAvatar]);
   return (
-    <div className='w-full mx-auto rounded-md bg-white dark:bg-gray-800 shadow-md'>
+    <div className='w-full flex flex-col mx-auto rounded-md bg-white dark:bg-gray-800 shadow-md'>
       <div className='p-2 flex items-center justify-between'>
         <Link to={`/profile/${post?.userId?._id}`} className='flex items-center gap-1'>
-            <div className='w-[55px] max-lg:w-[45px] h-[55px] max-lg:h-[45px] rounded-full bg-transparent p-1 border border-purple-600'>
-              <img className='w-full h-full rounded-full object-cover' src={post?.userId?.avatar?.url} alt="user" />
-            </div>
+          <div className='w-[55px] max-lg:w-[45px] h-[55px] max-lg:h-[45px] rounded-full bg-transparent p-1 border border-purple-600'>
+            <img className='w-full h-full rounded-full object-cover' src={userAvatar?.url} alt="user" />
+          </div>
           <div className='flex flex-col leading-4'>
             <span className='font-lobster tracking-widest text-purple-600 dark:text-slate-300 max-lg:text-sm'>{post?.userId?.userName}</span>
             <span className='font-lobster tracking-widest text-xs max-lg:text-[10px] text-slate-500'>From: {moment(post?.createdAt).fromNow()}</span>
           </div>
         </Link>
         <div className='relative'>
-          <MoreHorizIcon ref={settingPostRef} className='text-slate-600 dark:text-slate-300 cursor-pointer' onClick={()=>setSettingPost(!settingPost)}/>
+          <MoreHorizIcon ref={settingPostRef} className='text-slate-600 dark:text-slate-300 cursor-pointer' onClick={() => setSettingPost(!settingPost)} />
           <div className={`absolute z-[999] ${settingPost ? "visible" : "hidden"} right-0 -bottom-24 bg-white dark:bg-gray-800 shadow-lg rounded-md`}>
             <SettingPost post={post} handleSettingPost={handleSettingPost} suggestConsumer={suggestConsumer} deletePost={deletePost} />
           </div>
         </div>
       </div>
-      <div className='px-3 my-2'>
-        <p className='text-sm text-slate-500 dark:text-slate-300 select-none'>{post?.description}</p>
-      </div>
-      {
-        post?.imageUrl?.length > 0
-        &&
-        <div ref={sliderContainerRef} className="slider-container w-full max-h-full bg-white dark:bg-gray-800 overflow-hidden flex flex-col">
-            <div ref={sliderRef} className="slider w-full h-[400px] flex">
-              {
-                post.imageUrl.map((image, index) => (
-                  image.url.endsWith(".mp4") ?
-                    <div key={index} className="item w-full">
-                      <video src={image.url} className='w-full h-full object-center object-scale-down' autoPlay={true} loop muted/>
-                    </div>
-                    :
-                    <div key={index} className="item min-w-full h-full relative">
-                      <div className="overlay absolute top-0 left-0 bg-black w-full h-full bg-opacity-[0.01] select-none"></div>
-                      <img src={image.url} alt='Poster'  className='w-full h-full object-contain'/>
-                    </div>
-                ))
-              }
-            </div>
+      <div className="flex flex-col max-w-full">
+        <div className='px-6 py-2'>
+          <p className='text-sm text-slate-500 dark:text-slate-300 select-none'>{post?.description}</p>
         </div>
-      }
+        {
+          post?.imageUrl?.length > 0
+          &&
+          <div ref={sliderContainerRef} className="slider-container w-full max-h-full bg-white dark:bg-gray-800 overflow-hidden flex flex-col">
+            <div ref={sliderRef} className="slider max-w-full  flex">
+                <ImagePost images={post.imageUrl} />
+            </div>
+          </div>
+        }
+      </div>
       <div className='relative flex  items-center justify-around py-3 mt-3 mb-1 after:absolute after:bg-slate-400 after:dark:bg-slate-700 after:w-[90%] after:h-[1px] after:top-0'>
         <div className='flex items-center gap-1 text-purple-700 dark:text-slate-300 select-none'>
           {
-            addLike ? <ThumbUpAltIcon fontSize='small' className='LikeIcon cursor-pointer'  onClick={()=>likeAtPost(post._id, 1)}/> : <ThumbUpOffAlt fontSize='small' className='LikeIcon cursor-pointer' onClick={()=>likeAtPost(post._id, "like")}/>
+            addLike ? <ThumbUpAltIcon fontSize='small' className='LikeIcon cursor-pointer' onClick={() => likeAtPost(post._id, 1)} /> : <ThumbUpOffAlt fontSize='small' className='LikeIcon cursor-pointer' onClick={() => likeAtPost(post._id, "like")} />
           }
-          <span className='font-lobster tracking-widest cursor-pointer text-sm' onClick={()=>handleListConsumer(post._id)}>{likeList?.length > 0 ? likeList.length : ""}Like</span>
+          <span className='font-lobster tracking-widest cursor-pointer text-sm' onClick={() => handleListConsumer(post._id)}>{likeList?.length > 0 ? likeList.length : ""}Like</span>
         </div>
-        <div className='flex items-center gap-1 text-purple-700 dark:text-slate-300 cursor-pointer select-none' onClick={()=>setAddComment(!addComment)}>
-          <CommentOutlinedIcon fontSize='small' className=''/>
-          <span className='font-lobster tracking-widest text-sm'>{commentList?.length > 0 ? commentList.length : "" } Comment</span>
+        <div className='flex items-center gap-1 text-purple-700 dark:text-slate-300 cursor-pointer select-none' onClick={() => setAddComment(!addComment)}>
+          <CommentOutlinedIcon fontSize='small' className='' />
+          <span className='font-lobster tracking-widest text-sm'>{commentList?.length > 0 ? commentList.length : ""} Comment</span>
         </div>
         <div className='flex items-center gap-1 text-purple-700 dark:text-slate-300 cursor-pointer select-none'>
-          <ShareOutlinedIcon fontSize='small' className=''/>
+          <ShareOutlinedIcon fontSize='small' className='' />
           <span className='font-lobster tracking-widest text-sm'>Share</span>
         </div>
       </div>
@@ -124,8 +122,8 @@ const Post = ({ post, handleListConsumer, suggestConsumer, deletePost }) => {
           addComment && <Comments post={post} commentsPostConSumer={commentsPostConSumer} />
         }
       </div>
-      </div>
+    </div>
   );
-}
+};
 
 export default Post;

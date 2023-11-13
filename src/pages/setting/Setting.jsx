@@ -99,7 +99,6 @@ const Setting = () => {
     <div className='w-full min-h-screen dark:bg-slate-900'>
       <EntryNavbar />
       <div className='setting flex pt-3'>
-        <LeftHome />
         <div className='flex flex-col gap-2 min-h-full max-md:pb-2 max-md:px-0 px-2 flex-[6] pt-1 pb-1'>
           <div className="banner flex-2 relative bg-white dark:bg-gray-800 shadow-md w-full h-[200px] flex items-center justify-center rounded-md">
             {

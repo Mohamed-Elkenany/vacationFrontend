@@ -7,7 +7,7 @@ const MiddleHome = () => {
   const handleListConsumer = useContext(handleListContext);
   const suggestConsumer = useContext(suggestContext);
   return (
-    <div className='middleHome max-md:px-0 px-2 flex-[6] pt-2 pb-3'>
+    <div className='middleHome max-md:px-0 px-2 flex-[6] pt-2 pb-3 z-50'>
       <Stories/>
       <Posts handleListConsumer={handleListConsumer} suggestConsumer={suggestConsumer} />
     </div>

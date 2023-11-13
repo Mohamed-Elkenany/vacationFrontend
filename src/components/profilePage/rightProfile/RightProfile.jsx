@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import SettingPage from './settingPage/SettingPage';
-import AdvertismentOne from '../../advertisment/AdvertismentOne';
-import AdvertismentTwo from '../../advertisment/AdvertismentTwo';
 import { useParams } from 'react-router-dom';
+import { suggestContext } from '../../../pages/profilePage/ProfilePage';
+import SuggestFirend from '../../suggestFirend/SuggestFriend';
+import UserInfo from '../../advertisment/UserInfo';
 const RightProfile = () => {
+  const suggestConsumer = useContext(suggestContext);
   const { id: userId } = useParams();
   const mainUserId = JSON.parse(localStorage.getItem("userInfo")).user._id;
   return (
@@ -11,12 +13,11 @@ const RightProfile = () => {
       {
         userId === mainUserId
         ?
-          <SettingPage />
+          <SettingPage suggestConsumer={suggestConsumer} userId={mainUserId}/>
           :
-          ""
+          <UserInfo/>
       }
-      <AdvertismentOne/>
-      <AdvertismentTwo/>
+      <SuggestFirend suggestConsumer={suggestConsumer}/>
     </div>
   );
 }
