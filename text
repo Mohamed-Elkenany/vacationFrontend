@@ -1,13 +1,16 @@
+<h1 className='text-center font-lobster tracking-widest font-semibold text-slate-400'>Not Found</h1>
+
 {
-                    images.map((image, index) => (
-                        image.url.endsWith(".mp4") ?
-                            <div key={index} className="item max-w-full">
-                                <video src={image.url} className='max-w-full object-center' autoPlay={true} loop muted />
-                            </div>
-                            :
-                            <div key={index} className="item max-w-full h-full relative">
-                                <div className="overlay absolute top-0 left-0 bg-black w-full h-full bg-opacity-[0.01] select-none"></div>
-                                <img src={image.url} alt='Poster' className='max-w-full h-full object-fill' />
-                            </div>
-                    ))
-                }
+                isLoading &&
+                <div className='px-2 flex items-center justify-between'>
+                    <div className='flex items-center gap-1'>
+                        <SkeletonAvatar />
+                        <div>
+                            <SkeletonUserName />
+                        </div>
+                    </div>
+                    {
+                        <div className='w-[80px] h-[30px] bg-slate-300 dark:bg-gray-900 animate-pulse rounded-md' />
+                    }
+                </div>
+            }

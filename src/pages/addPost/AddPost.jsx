@@ -7,7 +7,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import EntryNavbar from '../../components/entryNavbar/EntryNavbar';
 const AddPost = () => {
     const user = JSON.parse(localStorage.getItem("userInfo")).user;
-    console.log(user);
     const navigate = useNavigate()
     const [state, dispatch] = useReducer(reducer, initialStatePost);
     const [addNewPost, { error, isLoading, isSuccess }] = useAddNewPostMutation();

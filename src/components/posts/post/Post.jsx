@@ -12,6 +12,8 @@ import  moment  from "moment";
 import { listLike } from '../../../slices/postSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import ImagePost from '../../imagePost/ImagePost';
+import { Skeleton } from '@mui/material';
+import SkeletonAvatar from '../../skeleton/SkeletonAvatar';
 const Post = ({ post, handleListConsumer, userId, suggestConsumer, deletePost }) => {
   const updateAvatar = useSelector(state => state.update);
   const settingPostRef = useRef();
@@ -23,7 +25,7 @@ const Post = ({ post, handleListConsumer, userId, suggestConsumer, deletePost })
   const dispatch = useDispatch();
   const mainUser = JSON.parse(localStorage.getItem("userInfo")).user;
   const [toggleLike, { isSuccess }] = useToggleLikePostMutation();
-  const [getUserById] = useGetUserByIdMutation();
+  const [getUserById, { isLoading: loadingGetUser, isSuccess: SuccessGetUser }] = useGetUserByIdMutation();
   const [settingPost, setSettingPost] = useState(false);
   const [addLike, setAddLike] = useState(false);
   const [likeList, setLikeList] = useState(post?.like);
@@ -72,9 +74,14 @@ const Post = ({ post, handleListConsumer, userId, suggestConsumer, deletePost })
     <div className='w-full flex flex-col mx-auto rounded-md bg-white dark:bg-gray-800 shadow-md'>
       <div className='p-2 flex items-center justify-between'>
         <Link to={`/profile/${post?.userId?._id}`} className='flex items-center gap-1'>
-          <div className='w-[55px] max-lg:w-[45px] h-[55px] max-lg:h-[45px] rounded-full bg-transparent p-1 border border-purple-600'>
+          {
+            loadingGetUser && <SkeletonAvatar />
+          }
+          {
+            SuccessGetUser && <div className='w-[55px] max-lg:w-[45px] h-[55px] max-lg:h-[45px] rounded-full bg-transparent p-1 border border-purple-600'>
             <img className='w-full h-full rounded-full object-cover' src={userAvatar?.url} alt="user" />
-          </div>
+            </div>
+          }
           <div className='flex flex-col leading-4'>
             <span className='font-lobster tracking-widest text-purple-600 dark:text-slate-300 max-lg:text-sm'>{post?.userId?.userName}</span>
             <span className='font-lobster tracking-widest text-xs max-lg:text-[10px] text-slate-500'>From: {moment(post?.createdAt).fromNow()}</span>

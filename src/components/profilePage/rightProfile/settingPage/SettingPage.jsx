@@ -61,7 +61,7 @@ const SettingPage = ({ userId, suggestConsumer }) => {
             <div className='p-1 flex flex-col justify-between h-full'>
                 <label htmlFor='upload_avatar' className={`flex items-center justify-between gap-1 p-1 font-lobster tracking-widest text-purple-700 dark:text-slate-200 hover:bg-purple-500 hover:text-slate-200 rounded-sm select-none ${isLoading || loadingDeleteAvatar || loadingUploadBanner || loadingUploadAvatar ? 'cursor-default' : 'cursor-pointer'}`}>
                     <div>
-                        <div><PhotoAlbumIcon fontSize='small' className='mr-1' />Update avatar</div>
+                        <div><PhotoAlbumIcon fontSize='small' className='text-slate-300 mr-1' />Update avatar</div>
                         <input disabled={isLoading || loadingDeleteAvatar || loadingUploadBanner || loadingUploadAvatar} onChange={handleUploadAvatar} type="file" accept="image/png, image/jpg, image/gif, image/jpeg" id="upload_avatar" className='hidden' />
                     </div>
                     {loadingUploadAvatar && <Loading/>}

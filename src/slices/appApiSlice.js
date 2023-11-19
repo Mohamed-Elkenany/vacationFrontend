@@ -2,7 +2,7 @@ import { useRadioGroup } from '@mui/material';
 import {  createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const appApiSlice = createApi({
     reducerPath: "appApi",
-    baseQuery: fetchBaseQuery({ baseUrl: "https://vacationback.onrender.com" }),
+    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000" }),
     endpoints: builder => ({
         register: builder.mutation({
             query: user => ({
@@ -123,7 +123,7 @@ const appApiSlice = createApi({
             })
         }),
         updatePost: builder.mutation({
-            query: post => (console.log(post.get("imageUrl")),{
+            query: post => ({
                 url: `/api/update-post/${post.get("postId")}`,
                 method: "PUT",
                 body: post,

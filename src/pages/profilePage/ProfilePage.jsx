@@ -8,12 +8,11 @@ import ListOfLikes from '../../components/listOfLikes/ListOfLikes';
 import { useParams } from 'react-router-dom';
 export const handleListContext = createContext();
 export const suggestContext = createContext();
-
 const ProfilePage = ({socket}) => {
   const { id } = useParams();
   const USER = JSON.parse(localStorage.getItem("userInfo")).user;
   const [postById] = useGetPostByIdMutation();
-  const [user] = useGetUserProfileMutation();
+  const [user, { isLoading: getUserLoading, isSuccess: getUsersuccess }] = useGetUserProfileMutation();
   const [UpdateBIO, { isLoading, isSuccess: isSuccessUpdateBIO }] = useUpdateUserProfileMutation();
   const [showLikeList, setShowLikeList] = useState(false);
   const [updateBIO, setUpdateBIO] = useState(false);
@@ -28,11 +27,13 @@ const ProfilePage = ({socket}) => {
     setSucces,
     setShowLikeList,
     setUpdateBIO,
-    mainBIO, 
+    mainBIO,
     setMainBIO,
     BIO,
     setBIO,
-    isSuccessUpdateBIO
+    isSuccessUpdateBIO,
+    getUserLoading,
+    getUsersuccess
   };
   const handleListLike = async (postId) => {
     await postById(postId)

@@ -11,6 +11,8 @@ import { useGetUserProfileMutation, useToggleLikePostMutation } from '../../slic
 import  moment  from "moment";
 import { listLike } from '../../slices/postSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import ImagePost from '../imagePost/ImagePost';
+import SkeletonAvatar from '../skeleton/SkeletonAvatar';
 const PostProfile = ({ post, handleListConsumer, suggestConsumer, deletePost }) => {
     const { id: userId } = useParams();
     const updates = useSelector(state => state.update);
@@ -26,7 +28,7 @@ const PostProfile = ({ post, handleListConsumer, suggestConsumer, deletePost }) 
     const dispatch = useDispatch();
     const mainUser = JSON.parse(localStorage.getItem("userInfo")).user;
     const [toggleLike, { isSuccess }] = useToggleLikePostMutation();
-    const [getUser] = useGetUserProfileMutation();
+    const [getUser, { isLoading: loadingAvatar, isSuccess: successAvatar }] = useGetUserProfileMutation();
     const [settingPost, setSettingPost] = useState(false);
     const [addLike, setAddLike] = useState(false);
     const [likeList, setLikeList] = useState(post?.like);
@@ -72,12 +74,18 @@ const PostProfile = ({ post, handleListConsumer, suggestConsumer, deletePost }) 
             .then(result => setAvatar(result));
     }, [updates.updateAvatar, updates.deleteAvatar, updates.updateAvatarInfo, userId]);
     return (
-        <div className='w-full mx-auto rounded-md bg-white dark:bg-gray-800 shadow-md'>
+        <div className='w-full flex flex-col mx-auto rounded-md bg-white dark:bg-gray-800 shadow-md'>
             <div className='p-2 flex items-center justify-between'>
                 <Link to={`/profile/${post?.userId?._id}`} className='flex items-center gap-1'>
-                    <div className='w-[55px] max-lg:w-[45px] h-[55px] max-lg:h-[45px] rounded-full bg-transparent p-1 border border-purple-600'>
-                        <img className='w-full h-full rounded-full object-cover' src={avatar?.avatar?.url} alt="user" />
-                    </div>
+                    {
+                        loadingAvatar &&
+                        <SkeletonAvatar />
+                    }
+                    {successAvatar &&
+                        <div className='w-[55px] max-lg:w-[45px] h-[55px] max-lg:h-[45px] rounded-full bg-transparent p-1 border border-purple-600'>
+                            <img className='w-full h-full rounded-full object-cover' src={avatar?.avatar?.url} alt="user" />
+                        </div>
+                    }
                     <div className='flex flex-col leading-4'>
                         <span className='font-lobster tracking-widest text-purple-600 dark:text-slate-300 max-lg:text-sm'>{post?.userId?.userName}</span>
                         <span className='font-lobster tracking-widest text-xs max-lg:text-[10px] text-slate-500'>From: {moment(post?.createdAt).fromNow()}</span>
@@ -90,30 +98,20 @@ const PostProfile = ({ post, handleListConsumer, suggestConsumer, deletePost }) 
                     </div>
                 </div>
             </div>
-            <div className='px-3 my-2'>
-                <p className='text-sm text-slate-500 dark:text-slate-300 select-none'>{post?.description}</p>
-            </div>
-            {
-                post?.imageUrl?.length > 0
-                &&
-                <div ref={sliderContainerRef} className="slider-container w-full max-h-full bg-white dark:bg-gray-800 overflow-hidden flex flex-col">
-                    <div ref={sliderRef} className="slider w-full h-[400px] flex">
-                        {
-                            post.imageUrl.map((image, index) => (
-                                image.url.endsWith(".mp4") ?
-                                    <div key={index} className="item w-full">
-                                        <video src={image.url} className='w-full h-full object-center object-scale-down' autoPlay={true} loop muted />
-                                    </div>
-                                    :
-                                    <div key={index} className="item min-w-full h-full relative">
-                                        <div className="overlay absolute top-0 left-0 bg-black w-full h-full bg-opacity-[0.01] select-none"></div>
-                                        <img src={image.url} alt='Poster' className='w-full h-full object-contain' />
-                                    </div>
-                            ))
-                        }
-                    </div>
+            <div className="flex flex-col max-w-full">
+                <div className='px-6 py-2'>
+                    <p className='text-sm text-slate-500 dark:text-slate-300 select-none'>{post?.description}</p>
                 </div>
-            }
+                {
+                    post?.imageUrl?.length > 0
+                    &&
+                    <div ref={sliderContainerRef} className="slider-container w-full max-h-full bg-white dark:bg-gray-800 overflow-hidden flex flex-col">
+                        <div ref={sliderRef} className="slider max-w-full flex">
+                            <ImagePost images={post.imageUrl} />
+                        </div>
+                    </div>
+                }
+            </div>
             <div className='relative flex  items-center justify-around py-3 mt-3 mb-1 after:absolute after:bg-slate-400 after:dark:bg-slate-700 after:w-[90%] after:h-[1px] after:top-0'>
                 <div className='flex items-center gap-1 text-purple-700 dark:text-slate-300 select-none'>
                     {

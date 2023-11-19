@@ -1,7 +1,8 @@
 export const initialStatePost = {
     description: "",
     imageUrl: [],
-    publicId:''
+    Showimage: [],
+    publicId:[]
 };
 
 export const reducer = (state = initialStatePost, action) => {
@@ -18,10 +19,16 @@ export const reducer = (state = initialStatePost, action) => {
                 imageUrl: action.payload
             }
         }
+        case "ADD_SHOWIMAGE": {
+            return {
+                ...state,
+                Showimage: action.payload
+            }
+        }
         case "ADD_PUBLICID": {
             return {
                 ...state,
-                publicId: action.payload
+                publicId: [...state.publicId, action.payload]
             }
         }
     }

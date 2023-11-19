@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
-import { useGetPostProfileMutation, useGetUserProfileMutation, useUploadUserAvatarMutation, useUploadUserBannerMutation } from '../../../../slices/appApiSlice';
+import {useGetUserByIdMutation, useGetPostProfileMutation, useGetUserProfileMutation, useUploadUserAvatarMutation, useUploadUserBannerMutation } from '../../../../slices/appApiSlice';
 import Follower from '../../../followers/follower/Follower';
 import { updateAvatarInfo, updateBanner } from "../../../../slices/updateSlice";
+import SkeletonAvatar from '../../../skeleton/SkeletonAvatar';
+import SkeletonBio from '../../../skeleton/SkeletonBio';
 const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) => {
     const DISpatch = useDispatch();
     const updates = useSelector(state => state.update);
@@ -20,6 +22,7 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
     const [uploadAvatar, { isLoading: loadingUploadAvatar, isSuccess: successUploadAvatar }] = useUploadUserAvatarMutation();
     const [getprofilePost, { isLoading: loadPostProfile, isSuccess: successPostProfile }] = useGetPostProfileMutation();
     const [user] = useGetUserProfileMutation();
+    const [userById, { isLoading: loadingGetUserById, isSuccess: successGetUserById, isError: errorGetUserById }] = useGetUserByIdMutation();
     const [searchFollower, setSearchFollower] = useState('');
     const initialState = {
         overlay: false,
@@ -56,7 +59,7 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
         }
     };
     const [state, dispatch] = useReducer(reducerFollow, initialState);
-    const handleUploadBanner = async(e) => {
+    const handleUploadBanner = async (e) => {
         const formData = new FormData();
         formData.append("banner", e.target.files[0]);
         formData.append("userId", userProfile?._id);
@@ -75,23 +78,34 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
             });
     };
     useEffect(() => {
-        user(userId)
+        userById(userId)
             .then(res => res.data)
             .then(resulte => {
                 setUserProfile(resulte)
-                setBanner(resulte.banner)
-                setAvatar(resulte.avatar)
-                setBIO(resulte.bio)
-                suggestConsumer.setBIO(resulte.bio)
+                setBanner(resulte?.banner)
+                setAvatar(resulte?.avatar)
+                setBIO(resulte?.bio)
+                suggestConsumer?.setBIO(resulte?.bio)
             });
-    }, [ suggestConsumer?.success, userId]);
+    }, [userId]);
     useEffect(() => {
         user(userId)
             .then(res => res.data)
             .then(resulte => {
-                setBIO(resulte.bio)
+                setUserProfile(resulte)
+                setBanner(resulte?.banner)
+                setAvatar(resulte?.avatar)
+                setBIO(resulte?.bio)
+                suggestConsumer?.setBIO(resulte?.bio)
             });
-    }, [ suggestConsumer?.isSuccessUpdateBIO]);
+    }, [suggestConsumer?.success]);
+    useEffect(() => {
+        user(userId)
+            .then(res => res.data)
+            .then(resulte => {
+                setBIO(resulte?.bio)
+            });
+    }, [suggestConsumer?.isSuccessUpdateBIO]);
     useEffect(() => {
         user(userId)
             .then(res => res.data)
@@ -109,19 +123,19 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
                 setBanner(resulte?.banner)
                 DISpatch({ type: updateBanner, payload: isSuccess });
             });
-    }, [isSuccess, updates.updateBanner,updates.deleteBanner]);
+    }, [isSuccess, updates.updateBanner, updates.deleteBanner]);
     useEffect(() => {
         dispatch({ type: "default" })
     }, [userId]);
     useEffect(() => {
-    getprofilePost(userId)
-        .then(res => res.data)
-      .then(resulte => {
-        setCountOfPost(resulte.posts)
-        postLengthConsumer.setPostLength(resulte.posts?.length);
-      })
-      .catch(error => console.log(error));
-  }, [userId, getprofilePost]);
+        getprofilePost(userId)
+            .then(res => res.data)
+            .then(resulte => {
+                setCountOfPost(resulte.posts)
+                postLengthConsumer.setPostLength(resulte.posts?.length);
+            })
+            .catch(error => console.log(error));
+    }, [userId, getprofilePost]);
     return (
         <div>
             <div className='bg-white dark:bg-gray-800 w-full h-auto rounded-md shadow-md'>
@@ -137,54 +151,83 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
                                         <button className='bg-purple-700 rounded-full flex items-center justify-center p-[2px] mb-1'><SearchIcon style={{ fontSize: "20px" }} /></button>
                                     </div>
                                 </form>
-                                    <div className='flex flex-col gap-2'>
-                                        {
-                                            !state.follow?.length ? <h1 className='text-center font-lobster tracking-widest font-semibold text-purple-700 dark:text-slate-400 mb-2'>Not {state.typeFollow} yet</h1>
-                                                :
-                                                state.follow.filter(user => {
-                                                    if (searchFollower) {
-                                                        return user.email.toLowerCase().indexOf(searchFollower.toLowerCase()) !== -1
-                                                    } else {
-                                                        return user
-                                                    }
-                                                })
-                                                    .map((user, index) => (
-                                                        <Follower key={index} user={user} />
-                                                    ))
-                                        }
-                                    </div>
+                                <div className='flex flex-col gap-2'>
+                                    {
+                                        !state.follow?.length ? <h1 className='text-center font-lobster tracking-widest font-semibold text-purple-700 dark:text-slate-400 mb-2'>Not {state.typeFollow} yet</h1>
+                                            :
+                                            state.follow.filter(user => {
+                                                if (searchFollower) {
+                                                    return user.email.toLowerCase().indexOf(searchFollower.toLowerCase()) !== -1
+                                                } else {
+                                                    return user
+                                                }
+                                            })
+                                                .map((user, index) => (
+                                                    <Follower key={index} user={user} />
+                                                ))
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
                 }
                 <div className="banner relative w-full h-[200px] flex items-center justify-center">
                     <div className="absolute z-10 top-0 left-0 w-full h-full bg-slate-100 bg-opacity-5"></div>
-                    {isLoading && <h1 className="text-xl dark:text-slate-400 font-lobster tracking-widest">Loading...</h1>}
-                    {banner?.url ? <img className='rounded-t-md w-full h-full object-cover object-right-top' src={banner.url} alt="banner" />
-                        :
-                        userProfile?._id === mainUserId ?
-                            <div>
-                                <label disabled={isLoading} htmlFor='upload_banner' className={`absolute right-2 top-2 w-fit text-slate-300 bg-purple-700  p-1 rounded-full flex items-center justify-center ${isLoading ? "cursor-default" : "cursor-pointer"} z-50`}><AddAPhotoIcon /></label>
-                                <input disabled={isLoading} accept="image/png, image/jpg, image/gif, image/jpeg" type="file" id="upload_banner" className='hidden' onChange={handleUploadBanner} />
-                                <h1 className='font-lobster tracking-widest dark:text-slate-300 text-slate-900 text-3xl opacity-30 select-none'>Vacation</h1>
-                            </div>
-                            :
-                            <h1 className='font-lobster tracking-widest dark:text-slate-300 text-slate-900 text-3xl opacity-30 select-none'>Vacation</h1>
+                    {
+                        isLoading && <h1 className="text-xl dark:text-slate-400 font-lobster tracking-widest">Loading...</h1>
                     }
-                    <div className='absolute -bottom-[35px] left-1/2 -translate-x-1/2 w-[70px] h-[70px] rounded-full p-1 border border-purple-800'>
-                        <div className="overlay relative bg-black w-full h-full z-50 rounded-full">
-                            {
-                                (userProfile?._id === mainUserId && !homePage) &&
-                            <label className={`absolute -bottom-2 left-0 w-6 h-6 rounded-full text-slate-300 text-opacity-70 bg-opacity-70 bg-purple-700 flex items-center justify-center ${loadingUploadAvatar ? 'cursor-default' : 'cursor-pointer'}`} htmlFor="uploadAvatar"><AddIcon /></label>
-                            }
-                            <input disabled={loadingUploadAvatar} type="file" id="uploadAvatar" className='hidden' onChange={handleUploadAvatar}/>
-                            <img className='h-full w-full rounded-full object-cover object-left-top z-10' src={avatar?.url} alt="user" />
-                        </div>
+                    {
+                        loadingGetUserById &&
+                        <div className='rounded-t-md w-full h-full bg-slate-300 dark:bg-gray-900 animate-pulse'></div>
+                    }
+                    {successGetUserById &&
+                        (
+                            banner?.url ? <img className='rounded-t-md w-full h-full object-cover object-right-top' src={banner.url} alt="banner" />
+                                :
+                                userProfile?._id === mainUserId ?
+                                    <div>
+                                        <label disabled={isLoading} htmlFor='upload_banner' className={`absolute right-2 top-2 w-fit text-slate-300 bg-purple-700  p-1 rounded-full flex items-center justify-center ${isLoading ? "cursor-default" : "cursor-pointer"} z-50`}><AddAPhotoIcon /></label>
+                                        <input disabled={isLoading} accept="image/png, image/jpg, image/gif, image/jpeg" type="file" id="upload_banner" className='hidden' onChange={handleUploadBanner} />
+                                        <h1 className='font-lobster tracking-widest dark:text-slate-300 text-slate-900 text-3xl opacity-30 select-none'>Vacation</h1>
+                                    </div>
+                                    :
+                                    <h1 className='font-lobster tracking-widest dark:text-slate-300 text-slate-900 text-3xl opacity-30 select-none'>Vacation</h1>
+                        )
+                    }
+                    <div className='absolute -bottom-[35px] left-1/2 -translate-x-1/2 w-[70px] h-[70px] rounded-full p-1 border border-purple-800 z-50'>
+                        {
+                            loadingGetUserById &&
+                            <div className='h-full w-full rounded-full object-cover object-left-top bg-slate-300 dark:bg-gray-900 animate-pulse'></div>
+                        }
+                        {successGetUserById &&
+                            <div className="overlay relative bg-black w-full h-full z-50 rounded-full">
+                                {
+                                    (userProfile?._id === mainUserId && !homePage) &&
+                                    <label className={`absolute -bottom-2 left-0 w-6 h-6 rounded-full text-slate-300 text-opacity-70 bg-opacity-70 bg-purple-700 flex items-center justify-center ${loadingUploadAvatar ? 'cursor-default' : 'cursor-pointer'}`} htmlFor="uploadAvatar"><AddIcon /></label>
+                                }
+                                <input disabled={loadingUploadAvatar} type="file" id="uploadAvatar" className='hidden' onChange={handleUploadAvatar} />
+                                <img className='h-full w-full rounded-full object-cover  z-10' src={avatar?.url} alt="user" />
+                            </div>
+                        }
                     </div>
                 </div>
                 <div className='mt-[35px] mb-2'>
-                    <h1 className='text-center font-lobster tracking-widest text-purple-700 dark:text-slate-300 font-semibold mb-1'>{userProfile?.userName}</h1>
                     {
+                        loadingGetUserById &&
+                        <div className='flex items-center justify-center w-full py-2'>
+                            <SkeletonBio />
+                        </div>
+                    }
+                    {successGetUserById &&
+                        <h1 className='text-center font-lobster tracking-widest text-purple-700 dark:text-slate-300 font-semibold mb-1'>{userProfile?.userName}</h1>
+                    }
+                    {
+                        loadingGetUserById &&
+                        <div className='ml-2'>
+                            <SkeletonBio />
+                        </div>
+                    }
+                    {successGetUserById &&
                         userProfile?.bio && <div className='flex items-start gap-1 text-purple-700 dark:text-slate-400 text-xs font-lobster tracking-wider px-1 my-1'>
                             <span className='whitespace-nowrap'>BIO : </span>
                             <span className=''>{BIO}</span>
@@ -193,7 +236,13 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
                     <div className='px-8 mt-2'>
                         <div className='border-t dark:border-slate-600 flex items-center justify-around py-1'>
                             <div className='font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center border-r dark:border-slate-600 w-full h-full'>
-                                <span className='max-md:hidden'>{userProfile?.followers?.length}</span>
+                                {
+                                    loadPostProfile &&
+                                    <div className='w-3 h-7 rounded-full bg-slate-300 dark:bg-gray-900'></div>
+                                }
+                                { successGetUserById &&
+                                    <span className='max-md:hidden'>{userProfile?.followers?.length}</span>
+                                    }
                                 <span className='max-md:hidden'>Followers</span>
                                 <button className="md:hidden font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center border-r dark:border-slate-600 w-full h-full" onClick={() => dispatch({ type: "Followers" })}>
                                     <span>{userProfile?.followers.length}</span>
@@ -201,15 +250,27 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
                                 </button>
                             </div>
                             <div className='font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center border-r dark:border-slate-600 w-full h-full'>
-                                <span className='max-md:hidden'>{userProfile?.following?.length}</span>
+                                {
+                                    loadPostProfile &&
+                                    <div className='w-3 h-7 rounded-full bg-slate-300 dark:bg-gray-900'></div>
+                                }
+                                { successGetUserById &&
+                                    <span className='max-md:hidden'>{userProfile?.following?.length}</span>
+                                    }
                                 <span className='max-md:hidden'>Following</span>
                                 <button className="md:hidden font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center border-r dark:border-slate-600 w-full h-full" onClick={() => dispatch({ type: "Following" })}>
+                                    <div className='w-3 h-6 rounded-full'></div>
                                     <span>{userProfile?.following?.length}</span>
                                     <span>Following</span>
                                 </button>
                             </div>
                             <div className='font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center  w-full h-full'>
-                                <span>{countOfPost?.length > 0 ? countOfPost.length : '0'}</span>
+                                { successPostProfile &&
+                                    <span>{countOfPost?.length > 0 ? countOfPost.length : '0'}</span>
+                                }
+                                { loadPostProfile &&
+                                    <div className='w-3 h-7 rounded-full bg-slate-300 dark:bg-gray-900'></div>
+                                }
                                 <span>Posts</span>
                             </div>
                         </div>

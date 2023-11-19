@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import SkeletonAvatar from "../skeleton/SkeletonAvatar";
+import SkeletonUserName from "../skeleton/SkeletonUserName";
 import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
@@ -13,11 +15,12 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import Notification from "../notification/Notification";
 import { logout } from '../../slices/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGetUserByIdMutation } from '../../slices/appApiSlice';
+import { useGetUserByIdMutation, useGetUserProfileMutation } from '../../slices/appApiSlice';
 const Navbar = ({ socket }) => {
   const userId = JSON.parse(localStorage.getItem("userInfo")).user._id;
   const updateAV = useSelector(state => state.update);
-  const [getUser] = useGetUserByIdMutation();
+  const [getUserAvatar, { isLoading: loadingAvatar, isSuccess: successAvatar }] = useGetUserByIdMutation();
+  const [getUserProf, { isLoading, isSuccess, isError }] = useGetUserProfileMutation();
   const [user, setUser] = useState('');
   const [updateAvatar, setUpdateAvatar] = useState();
   const dispatch = useDispatch();
@@ -37,7 +40,7 @@ const Navbar = ({ socket }) => {
     setNotificationCount([]);
     if (buttonIconRef.current.contains(iconNotifcationRef.current)) {
       setOpenNotification(!openNotification);
-    } 
+    }
   }
 
   const customTheme = () => {
@@ -75,7 +78,7 @@ const Navbar = ({ socket }) => {
   }, []);
   
   useEffect(() => {
-    getUser(userId)
+    getUserProf(userId)
       .then(res => res.data)
       .then(resulte => setUser(resulte));
 
@@ -86,12 +89,12 @@ const Navbar = ({ socket }) => {
     })
   }, []);
   useEffect(() => {
-    getUser(userId)
+    getUserAvatar(userId)
       .then(res => res.data)
       .then(resulte => {
         setUpdateAvatar(resulte);
       });
-  }, [updateAV.updateAvatarInfo, updateAV.updateAvatar,updateAV.deleteAvatar]);
+  }, [updateAV.updateAvatarInfo, updateAV.updateAvatar, updateAV.deleteAvatar]);
   return (
     <div className='bg-white dark:bg-gray-800 w-full z-[999] sticky top-0 max-md:-top-8 left-0 shadow-md px-2 py-1'>
       <div className={`absolute bg-white dark:bg-gray-800 ${viewProfile ? 'active' : 'inActive'} transform duration-200 right-16 bg-white dark:bg-gray-800 rounded-sm dark:text-slate-300 text-purple-700 font-lobster tracking-widest text-sm`}>
@@ -136,13 +139,45 @@ const Navbar = ({ socket }) => {
           </div>
           <div className='flex-1 flex items-center justify-center max-md:justify-around gap-6'>
             <Link to='/search' className='md:hidden'><SearchIcon className='text-purple-700 dark:text-slate-300 cursor-pointer' onClick={() => setSearch(!search)} /></Link>
-            {theme === 'light' ? <DarkMode className=' cursor-pointer text-purple-700' onClick={customTheme} /> : <LightMode className=' cursor-pointer text-slate-300' onClick={customTheme} />}
-            <div ref={profileRef} className='flex items-center gap-1 cursor-pointer select-none' onClick={() => setViewProfile(!viewProfile)}>
-              <div className='w-[50px] h-[50px] rounded-full p-1 border-[2px] border-purple-700'>
-                <img className='w-full h-full rounded-full object-cover' src={updateAvatar?.avatar?.url} alt="user" />
+            {
+              theme === 'light' ? <DarkMode className=' cursor-pointer text-purple-700' onClick={customTheme} /> : <LightMode className=' cursor-pointer text-slate-300' onClick={customTheme} />
+            }
+            {
+              isError &&
+              <div ref={profileRef} className='flex items-center gap-1 cursor-pointer select-none' onClick={() => setViewProfile(!viewProfile)}>
+                <SkeletonAvatar />
+                <SkeletonUserName />
               </div>
-              <h1 className='max-lg:hidden font-lobster tracking-wider text-purple-800 dark:text-slate-300'>{user?.userName}</h1>
-            </div>
+            }
+            {
+              isLoading &&
+              <div ref={profileRef} className='flex items-center gap-1 cursor-pointer select-none' onClick={() => setViewProfile(!viewProfile)}>
+                <SkeletonAvatar />
+                <div className='max-lg:hidden font-lobster tracking-wider text-purple-800 dark:text-slate-300'>
+                  <SkeletonUserName />
+                </div>
+              </div>
+            }
+            {
+              isSuccess &&
+              <div ref={profileRef} className='flex items-center gap-1 cursor-pointer select-none' onClick={() => setViewProfile(!viewProfile)}>
+                {
+                  loadingAvatar
+                  &&
+                  <SkeletonAvatar />
+                }
+                {
+                  successAvatar &&
+                  <div className='w-[50px] h-[50px] rounded-full p-1 border-[2px] border-purple-700'>
+                    <img className='w-full h-full rounded-full object-cover' src={updateAvatar?.avatar?.url} alt="user" />
+                  </div>
+                }
+                <div className="flex flex-col">
+                  <h1 className='max-lg:hidden font-lobster tracking-wider text-purple-800 dark:text-slate-300'>{user?.userName}</h1>
+                  <h1 className='max-lg:hidden font-lobster tracking-wider text-slate-300 dark:text-slate-500 text-xs'>{user?.email}</h1>
+                </div>
+              </div>
+            }
           </div>
         </div>
       </div>
