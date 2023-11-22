@@ -119,7 +119,7 @@ const Navbar = ({ socket }) => {
                 <h1 className='text-center font-lobster tracking-widest text-purple-700 dark:text-slate-300 '>You don't have Notification yet</h1>
             }
           </div>
-          <div className='flex-1 flex items-center justify-around max-md:justify-around max-md:gap-0gap-14 text-purple-700 dark:text-slate-300'>
+          <div className='flex-1 flex items-center md:justify-center md:gap-10 max-md:justify-around max-md:gap-0 gap-14 text-purple-700 dark:text-slate-300'>
             <Link to="/"><CottageOutlinedIcon /></Link>
             <div className='relative w-fit'>
               {
