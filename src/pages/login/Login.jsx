@@ -44,11 +44,6 @@ const Login = () => {
                 <h1 className='whitespace-nowrap text-sm border p-1 bg-red-800 text-white font-lobster font-medium rounded-md'>{errorMessage}</h1>
               </div>
             }
-            { isLoading &&
-              <div className='text-center'>
-                <h1 className='whitespace-nowrap text-sm font-lobster font-medium'>Loading...</h1>
-              </div>
-            }
           <div className='h-full w-full flex flex-col'>
             <form className='flex flex-1 flex-col justify-between' onSubmit={handleLogin}>
               <h1 className='text-slate-900 font-lobster text-4xl text-center sm:text-3xl lg:text-4xl'>Login</h1>
