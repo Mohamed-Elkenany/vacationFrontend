@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Swal from "sweetalert2";
 import { Link } from 'react-router-dom';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -10,7 +10,7 @@ import { useDeleteMyPostMutation } from '../../slices/appApiSlice';
 import Button from '../button/Button';
 const SettingPost = ({ post, handleSettingPost, suggestConsumer, deletePost: DeletePost }) => {
     const userId = JSON.parse(localStorage.getItem("userInfo")).user._id;
-    const [deleteMyPost] = useDeleteMyPostMutation();
+    const [deleteMyPost,{isSuccess}] = useDeleteMyPostMutation();
     const [follow, setFollow] = useState(post.userId);
     const setUser = (updateUser) => {
         setFollow(updateUser)
@@ -30,7 +30,6 @@ const SettingPost = ({ post, handleSettingPost, suggestConsumer, deletePost: Del
                 deleteMyPost(post._id)
                     .then(res => res.data)
                     .then(result => {
-                        DeletePost(post._id);
                         Swal.fire(
                             'Deleted!',
                             `${result.message}`,
@@ -47,6 +46,10 @@ const SettingPost = ({ post, handleSettingPost, suggestConsumer, deletePost: Del
             };
         });
     };
+    useEffect(() => {
+        DeletePost(isSuccess)
+        suggestConsumer.setDeletedPost(isSuccess)
+    },[isSuccess])
   return (
     <div className='dark:text-slate-300 whitespace-nowrap'>
     {
@@ -59,9 +62,6 @@ const SettingPost = ({ post, handleSettingPost, suggestConsumer, deletePost: Del
         <div className='flex flex-col'>
             <div className='p-2 hover:bg-slate-400 dark:hover:bg-gray-700 font-lobster tracking-widest text-slate-700 dark:text-slate-300 rounded-t-md cursor-pointer'>
                 <div className='flex items-center w-fit bg-purple-700 rounded-md px-2 py-1'>
-                {
-                    follow?.followers?.includes(userId) ? <PersonAddDisabledOutlinedIcon/> : <PersonAddAltOutlinedIcon/>
-                }
                     <Button userId={post.userId?._id} setUser={setUser} user={post.userId} suggestConsumer={suggestConsumer}/>
                 </div>
             </div>

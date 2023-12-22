@@ -52,7 +52,7 @@ const Comments = ({ post, commentsPostConSumer }) => {
                 setAllComment(resulte);
             })
             .catch(error => console.log(error.message));
-    }, [updateCommentSuccess]);
+    }, [updateCommentSuccess, successDelete]);
     return (
         <div className='max-h-[300px] overflow-y-scroll scrollbar-none px-5'>
             

@@ -1,9 +1,7 @@
 import React, { useContext } from 'react';
 import UserInfo from '../advertisment/UserInfo';
 import { suggestContext } from '../../pages/homePage/HomePage';
-import { Link } from 'react-router-dom';
 import SettingPage from '../profilePage/rightProfile/settingPage/SettingPage';
-import { postLengthContext } from '../profilePage/middleprofile/Middleprofile';
 const LeftHome = () => {
   const suggestConsumer = useContext(suggestContext);
   const userId = JSON.parse(localStorage.getItem("userInfo")).user._id;

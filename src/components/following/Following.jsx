@@ -1,17 +1,30 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import Follow from './follow/Follow';
 import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useGetUserByIdMutation } from '../../slices/appApiSlice';
+import { suggestContext } from '../../pages/profilePage/ProfilePage';
 const Following = () => {
+    const suggestConsumer = useContext(suggestContext);
+    const { id } = useParams();
+    console.log(id);
     const [searchFollowing, setSearchFollowing] = useState('');
+    const [user, setUser] = useState();
+    const [getUser] = useGetUserByIdMutation();
     let uesrProfile = useSelector(state => state.userProfile.user);
-    const uesrProfileSearch = uesrProfile?.following.filter(user => {
+    const uesrProfileSearch = user?.following.filter(user => {
         if (searchFollowing) {
             return user.userName.trim().toLowerCase().startsWith(searchFollowing.toLowerCase().trim());
         } else {
             return user;
         }
     });
+    useEffect(() => {
+        getUser(id)
+            .then(res => res.data)
+            .then(resulte => setUser(resulte));
+    },[id,suggestConsumer.success])
     return (
         <div className='bg-white dark:bg-slate-800 rounded-md shadow-md h-1/2 overflow-y-scroll scrollbar-none'>
             <h1 className='sticky top-0 bg-purple-800 dark:bg-slate-200 text-slate-200 dark:text-gray-900 text-center text-lg font-lobster tracking-widest font-semibold py-[2px] '>Following</h1>
@@ -25,11 +38,11 @@ const Following = () => {
                 {
                     !searchFollowing ?
                         (
-                            !uesrProfile?.following?.length
+                            !user?.following?.length
                                 ?
-                                <h1 className='text-center font-lobster tracking-widest font-semibold text-slate-400'>No follower yet</h1>
+                                <h1 className='text-center font-lobster tracking-widest font-semibold text-slate-400'>You don't follow anyone yet</h1>
                                 :
-                                uesrProfile.following.map((user, index) => (
+                                user.following.map((user, index) => (
                                     <Follow key={index} user={user} />
                                 ))
                         )

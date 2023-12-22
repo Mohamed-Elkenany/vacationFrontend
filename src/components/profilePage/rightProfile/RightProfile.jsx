@@ -15,7 +15,7 @@ const RightProfile = () => {
         ?
           <SettingPage suggestConsumer={suggestConsumer} userId={mainUserId}/>
           :
-          <UserInfo/>
+          <UserInfo suggestConsumer={suggestConsumer}/>
       }
       <SuggestFirend suggestConsumer={suggestConsumer}/>
     </div>

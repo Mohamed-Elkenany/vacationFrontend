@@ -31,7 +31,7 @@ const Setting = () => {
   const [userNameSetting, setUserNameSetting] = useState(false);
   const [getUser, { isLoading }] = useGetUserByIdMutation();
   const [bannerUpload, { isSuccess: sucessUploadBanner, isLoading: loadingUploadBanner }] = useUploadUserBannerMutation();
-  const [avatarUpload, { isSuccess: sucessUploadAvatar, isLoading: loadingUploadAvatar }] = useUploadUserAvatarMutation();
+  const [avatarUpload, { isSuccess: sucessUploadAvatar, isLoading: loadingUploadAvatar,isError,error }] = useUploadUserAvatarMutation();
   const [deleteAvatar, { isSuccess: sucessDeleteAvatar, isLoading: loadingDeleteAvatar }] = useDeleteUserAvatarMutation();
   const [deleteBanner, { isSuccess: sucessDeleteBanner, isLoading: loadingDeleteBanner }] = useDeleteUserBannerMutation();
   const [updateUser, { isSuccess: sucessUpdateUser, isLoading: loadingUpdateUser }] = useUpdateUserProfileMutation();
@@ -95,6 +95,11 @@ const Setting = () => {
   useLayoutEffect(() => {
     sucessDeleteBanner && toast.success("Banner deteted successfully", settingToast)
   }, [sucessDeleteBanner]);
+  useEffect(() => {
+    if (isError) {
+      console.log(error);
+    }
+  },[isError])
   return (
     <div className='w-full min-h-screen dark:bg-slate-900'>
       <EntryNavbar />

@@ -11,7 +11,7 @@ import { ReplyContext } from './Comments';
 const Comment = ({ comment, user, allComment, success }) => {
     const ReplyConsumer = useContext(ReplyContext);
     const settingCommentRef = useRef();
-    const [updateComment, { isLoading: loadingUpdate, isSuccess: successUpdate }] = useUpdateCommentPostMutation();
+    const [updateComment, { isLoading: loadingUpdate, isSuccess: successUpdate,error }] = useUpdateCommentPostMutation();
     const userId = JSON.parse(localStorage.getItem("userInfo")).user._id;
     const [like] = useToggleCommentLikeMutation();
     const [getCommentById] = useGetCommentByIdMutation();
@@ -51,21 +51,18 @@ const Comment = ({ comment, user, allComment, success }) => {
             }
         })
     }, [])
-    // useEffect(() => {
-    //     ReplyConsumer.setUpdateCommentSuccess(loadingUpdate);
-    // }, [])
-    useEffect(() => {
+    useEffect( () => {
         getCommentById(comment._id)
             .then(res => res.data)
             .then(result => {
                 setCommemt(result)
             });
-    }, [success]);
+    }, [success,ReplyConsumer.successDelete]);
     return (
         <div className="max-w-[97%] w-fit">
             {
                 editComment && <div className="overlay absolute z-[1000] top-0 left-0 bg-black bg-opacity-75 w-full h-full">
-                    <div className='text-white fixed top-1/3 -translate-x-1/2 left-1/2 -translate-y-1/2 w-1/3'>
+                    <div className='text-white fixed top-1/3 -translate-x-1/2 left-1/2 -translate-y-1/2 max-md:w-[90%] md:w-1/3'>
                         <div className={`${loadingUpdate && 'hidden'} absolute -right-4 -top-4 bg-gray-950 px-2 py-1 rounded-md cursor-pointer`} onClick={() => setEditComment(false)}>X</div>
                         <form onSubmit={submitEditComment} className='flex flex-col gap-2 bg-gray-800 w-full p-2 rounded-md'>
                             <input defaultValue={COmment?.comment} type="text" placeholder='Comment...' className='px-1 py-1 text-sm bg-transparent border-b border-gray-700 outline-none' onChange={(e) => setEditCommentInput(e.target.value)} />
@@ -83,8 +80,8 @@ const Comment = ({ comment, user, allComment, success }) => {
                 <div className='flex flex-col gap-1' >
                     <div className="bg-slate-200 dark:bg-gray-700 px-1 pb-1 rounded-md w-fit">
                         <div className="flex items-center gap-2">
-                            <Link to={`/profile/${comment?.userId?._id}`} className='hover:underline text-purple-700 dark:text-slate-300'>
-                                <h1 className='text-sm max-lg:text-xs font-lobster tracking-widest'>{comment?.userId?.userName}</h1>
+                            <Link to={`/profile/${comment?.userId?._id}`} className='hover:underline text-purple-700 dark:text-slate-300 mr-3'>
+                                <h1 className='text-sm max-lg:text-xs font-lobster tracking-widest whitespace-nowrap'>{`${comment?.userId?.userName?.split(" ")[0][0].toUpperCase()}${comment?.userId?.userName?.split(' ')[0].slice(1)} ${comment?.userId?.userName?.split(' ')[1] !== undefined ? comment?.userId?.userName?.split(' ')[1][0].toUpperCase() : ''}${comment?.userId?.userName?.split(' ')[1] !== undefined ? comment?.userId?.userName?.split(' ')[1].slice(1) : ''}`}</h1>
                             </Link>
                             {(userId === comment?.userId?._id || userId === comment?.postId?.userId ) &&
                                 <div className='relative text-purple-700 dark:text-slate-300 w-fit cursor-pointer z-50'>
@@ -99,7 +96,7 @@ const Comment = ({ comment, user, allComment, success }) => {
                         <p className=' text-slate-700 dark:text-slate-400 text-sm'>{COmment?.comment}</p>
                     </div>
                     <div className="text-xs max-lg:text-[10px] flex items-center gap-4 text-purple-700 dark:text-slate-300 font-lobster tracking-widest">
-                        <div className="flex items-center gap-1">{addLikeComment ? <ThumbUpAltIcon style={{ fontSize: '15px' }} className='LikeIcon cursor-pointer' onClick={() => handleLike()} /> : <ThumbUpOffAlt style={{ fontSize: '15px' }} className='LikeIcon cursor-pointer' onClick={() => handleLike()} />} <h1>{commentLike?.length > 0 ? commentLike?.length : ""} Like</h1></div>
+                        <div className="flex items-center gap-1">{addLikeComment ? <ThumbUpAltIcon style={{ fontSize: '15px' }} className='LikeIcon cursor-pointer' onClick={() => handleLike()} /> : <ThumbUpOffAlt style={{ fontSize: '15px' }} className='LikeIcon cursor-pointer' onClick={() => handleLike()} />} <h1 className='whitespace-nowrap'>{commentLike?.length > 0 ? commentLike?.length : ""} Like</h1></div>
                         <button className="flex items-center gap-1" onClick={() => ReplyConsumer.handleReplay({ commentId: comment._id, name: `${comment.userId.userName}` })}><ReplyOutlinedIcon style={{ fontSize: '15px' }} className='LikeIcon cursor-pointer' onClick={() => setAddLikeComment(false)} /><h1>Reply</h1></button>
                         <div className="flex items-center gap-1 flex-nowrap"><h1>From:</h1> <span className=' whitespace-nowrap'>{moment(comment?.createdAt).fromNow().split(" ").splice(0, 1).concat(moment(comment?.createdAt).fromNow().split(" ").slice(1, 2).join("").slice(0, 1))}</span></div>
                     </div>

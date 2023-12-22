@@ -92,45 +92,44 @@ const ProfilePost = ({ handleListConsumer, suggestConsumer }) => {
                 <SkeletonUserName/>
               </div>
               <div className="p-1">
-                <div className='w-full h-[100px] dark:bg-gray-900 rounded-md animate-pulse'>
+                <div className='w-full h-[100px] bg-slate-300 dark:bg-gray-900 rounded-md animate-pulse'>
 
                 </div>
               </div>
               <div className="p-1">
-                <div className='w-full h-[30px] dark:bg-gray-900 rounded-md animate-pulse'>
+                <div className='w-full h-[30px] bg-slate-300 dark:bg-gray-900 rounded-md animate-pulse'>
 
                 </div>
               </div>
             </div>
-            <div className='w-full flex flex-col mx-auto rounded-md bg-white dark:bg-gray-800 shadow-md p-2'>
+            <div className='w-full flex flex-col bg-slate-300 mx-auto rounded-md dark:bg-gray-800 shadow-md p-2'>
               <div className="flex items-center gap-2 pb-2">
                 <SkeletonAvatar />
                 <SkeletonUserName/>
               </div>
               <div className="p-1">
-                <div className='w-full h-[100px] dark:bg-gray-900 rounded-md animate-pulse'>
+                <div className='w-full h-[100px] bg-slate-300 dark:bg-gray-900 rounded-md animate-pulse'>
 
                 </div>
               </div>
               <div className="p-1">
-                <div className='w-full h-[30px] dark:bg-gray-900 rounded-md animate-pulse'>
+                <div className='w-full h-[30px] bg-slate-300 dark:bg-gray-900 rounded-md animate-pulse'>
 
                 </div>
               </div>
             </div>
-            <div className='w-full flex flex-col mx-auto rounded-md bg-white dark:bg-gray-800 shadow-md p-2'>
+            <div className='w-full flex flex-col bg-slate-300 mx-auto rounded-md dark:bg-gray-800 shadow-md p-2'>
               <div className="flex items-center gap-2 pb-2">
                 <SkeletonAvatar />
                 <SkeletonUserName/>
               </div>
               <div className="p-1">
-                <div className='w-full h-[100px] dark:bg-gray-900 rounded-md animate-pulse'>
+                <div className='w-full h-[100px] bg-slate-300 dark:bg-gray-900 rounded-md animate-pulse'>
 
                 </div>
               </div>
               <div className="p-1">
-                <div className='w-full h-[30px] dark:bg-gray-900 rounded-md animate-pulse'>
-
+                <div className='w-full h-[30px] bg-slate-300 dark:bg-gray-900 rounded-md animate-pulse'>
                 </div>
               </div>
             </div>

@@ -1,8 +1,7 @@
-import { useRadioGroup } from '@mui/material';
 import {  createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const appApiSlice = createApi({
     reducerPath: "appApi",
-    baseQuery: fetchBaseQuery({ baseUrl: "https://vacation-back-api.vercel.app/" }),
+    baseQuery: fetchBaseQuery({ baseUrl: "https://vacation-back-api.vercel.app" }),
     endpoints: builder => ({
         register: builder.mutation({
             query: user => ({
@@ -59,14 +58,14 @@ const appApiSlice = createApi({
         deleteUserAvatar: builder.mutation({
             query: avatarId => ({
                 url: `/api/delete-profile-photo/${avatarId}`,
-                method: "PATCH",
+                method: "DELETE",
                 headers: { Authorization: `Bearer ${JSON.parse(localStorage.getItem("userInfo")).token}` },
             })
         }),
         uploadUserAvatar: builder.mutation({
             query: avatar => ({
                 url: `/api/upload-profile-photo/${avatar.get("userId")}`,
-                method:"PUT",
+                method: "PUT",
                 body: avatar,
                 headers: { Authorization: `Bearer ${JSON.parse(localStorage.getItem("userInfo")).token}` },
                 prepareHeaders: headers => {
@@ -90,7 +89,7 @@ const appApiSlice = createApi({
         deleteUserBanner: builder.mutation({
             query: bannerId => ({
                 url: `/api/delete-profile-banner/${bannerId}`,
-                method: "PATCH",
+                method: "DELETE",
                 headers: { Authorization: `Bearer ${JSON.parse(localStorage.getItem("userInfo")).token}` },
             })
         }),

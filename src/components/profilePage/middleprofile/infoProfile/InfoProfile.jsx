@@ -21,7 +21,7 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
     const [uploadBanner, { isLoading, isSuccess }] = useUploadUserBannerMutation();
     const [uploadAvatar, { isLoading: loadingUploadAvatar, isSuccess: successUploadAvatar }] = useUploadUserAvatarMutation();
     const [getprofilePost, { isLoading: loadPostProfile, isSuccess: successPostProfile }] = useGetPostProfileMutation();
-    const [user] = useGetUserProfileMutation();
+    const [user, { isSuccess: successGetUser }] = useGetUserProfileMutation();
     const [userById, { isLoading: loadingGetUserById, isSuccess: successGetUserById, isError: errorGetUserById }] = useGetUserByIdMutation();
     const [searchFollower, setSearchFollower] = useState('');
     const initialState = {
@@ -84,7 +84,6 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
                 setUserProfile(resulte)
                 setBanner(resulte?.banner)
                 setAvatar(resulte?.avatar)
-                setBIO(resulte?.bio)
                 suggestConsumer?.setBIO(resulte?.bio)
             });
     }, [userId]);
@@ -95,7 +94,6 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
                 setUserProfile(resulte)
                 setBanner(resulte?.banner)
                 setAvatar(resulte?.avatar)
-                setBIO(resulte?.bio)
                 suggestConsumer?.setBIO(resulte?.bio)
             });
     }, [suggestConsumer?.success]);
@@ -103,9 +101,10 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
         user(userId)
             .then(res => res.data)
             .then(resulte => {
+                setUserProfile(resulte)
                 setBIO(resulte?.bio)
             });
-    }, [suggestConsumer?.isSuccessUpdateBIO]);
+    }, [suggestConsumer.success,suggestConsumer.isSuccessUpdateBIO]);
     useEffect(() => {
         user(userId)
             .then(res => res.data)
@@ -185,13 +184,15 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
                             banner?.url ? <img className='rounded-t-md w-full h-full object-cover object-right-top' src={banner.url} alt="banner" />
                                 :
                                 userProfile?._id === mainUserId ?
-                                    <div>
+                                    <div className='relative w-full h-full bg-slate-200 dark:bg-transparent rounded-t-md'>
                                         <label disabled={isLoading} htmlFor='upload_banner' className={`absolute right-2 top-2 w-fit text-slate-300 bg-purple-700  p-1 rounded-full flex items-center justify-center ${isLoading ? "cursor-default" : "cursor-pointer"} z-50`}><AddAPhotoIcon /></label>
                                         <input disabled={isLoading} accept="image/png, image/jpg, image/gif, image/jpeg" type="file" id="upload_banner" className='hidden' onChange={handleUploadBanner} />
-                                        <h1 className='font-lobster tracking-widest dark:text-slate-300 text-slate-900 text-3xl opacity-30 select-none'>Vacation</h1>
+                                        <h1 className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-lobster tracking-widest dark:text-slate-300 text-slate-900 text-3xl opacity-30 select-none'>Vacation</h1>
                                     </div>
                                     :
-                                    <h1 className='font-lobster tracking-widest dark:text-slate-300 text-slate-900 text-3xl opacity-30 select-none'>Vacation</h1>
+                                    <div className='relative w-full h-full bg-slate-200 dark:bg-transparent rounded-t-md'>
+                                        <h1 className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-lobster tracking-widest dark:text-slate-300 text-slate-900 text-3xl opacity-30 select-none'>Vacation</h1>
+                                    </div>
                         )
                     }
                     <div className='absolute -bottom-[35px] left-1/2 -translate-x-1/2 w-[70px] h-[70px] rounded-full p-1 border border-purple-800 z-50'>
@@ -200,18 +201,18 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
                             <div className='h-full w-full rounded-full object-cover object-left-top bg-slate-300 dark:bg-gray-900 animate-pulse'></div>
                         }
                         {successGetUserById &&
-                            <div className="overlay relative bg-black w-full h-full z-50 rounded-full">
+                            <div className="overlay relative w-full h-full z-50 rounded-full">
                                 {
                                     (userProfile?._id === mainUserId && !homePage) &&
                                     <label className={`absolute -bottom-2 left-0 w-6 h-6 rounded-full text-slate-300 text-opacity-70 bg-opacity-70 bg-purple-700 flex items-center justify-center ${loadingUploadAvatar ? 'cursor-default' : 'cursor-pointer'}`} htmlFor="uploadAvatar"><AddIcon /></label>
                                 }
                                 <input disabled={loadingUploadAvatar} type="file" id="uploadAvatar" className='hidden' onChange={handleUploadAvatar} />
-                                <img className='h-full w-full rounded-full object-cover  z-10' src={avatar?.url} alt="user" />
+                                <img className='h-full w-full rounded-full object-cover z-10' src={avatar?.url} alt="user" />
                             </div>
                         }
                     </div>
                 </div>
-                <div className='mt-[35px] mb-2'>
+                <div className='mt-[35px] mb-2 pb-2'>
                     {
                         loadingGetUserById &&
                         <div className='flex items-center justify-center w-full py-2'>
@@ -219,7 +220,7 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
                         </div>
                     }
                     {successGetUserById &&
-                        <h1 className='text-center font-lobster tracking-widest text-purple-700 dark:text-slate-300 font-semibold mb-1'>{userProfile?.userName}</h1>
+                        <h1 className='text-center font-lobster tracking-widest text-purple-700 dark:text-slate-300 font-semibold mb-1'>{`${userProfile?.userName[0].toUpperCase()}${userProfile?.userName.split(' ')[0].slice(1)} ${userProfile?.userName.split(' ')[1] ? userProfile?.userName.split(' ')[1][0].toUpperCase() : ''}${userProfile?.userName.split(' ')[1] ? userProfile?.userName.split(' ')[1].slice(1) : ''}`}</h1>
                     }
                     {
                         loadingGetUserById &&
@@ -227,10 +228,10 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
                             <SkeletonBio />
                         </div>
                     }
-                    {successGetUserById &&
+                    {
                         userProfile?.bio && <div className='flex items-start gap-1 text-purple-700 dark:text-slate-400 text-xs font-lobster tracking-wider px-1 my-1'>
                             <span className='whitespace-nowrap'>BIO : </span>
-                            <span className=''>{BIO}</span>
+                            <span className=''>{userProfile?.bio}</span>
                         </div>
                     }
                     <div className='px-8 mt-2'>
@@ -246,7 +247,7 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
                                 <span className='max-md:hidden'>Followers</span>
                                 <button className="md:hidden font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center border-r dark:border-slate-600 w-full h-full" onClick={() => dispatch({ type: "Followers" })}>
                                     <span>{userProfile?.followers.length}</span>
-                                    <span>Followers</span>
+                                    <span className='text-sm'>Followers</span>
                                 </button>
                             </div>
                             <div className='font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center border-r dark:border-slate-600 w-full h-full'>
@@ -258,20 +259,19 @@ const InfoProfile = ({ suggestConsumer, userId, postLengthContext, homePage }) =
                                     <span className='max-md:hidden'>{userProfile?.following?.length}</span>
                                     }
                                 <span className='max-md:hidden'>Following</span>
-                                <button className="md:hidden font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center border-r dark:border-slate-600 w-full h-full" onClick={() => dispatch({ type: "Following" })}>
-                                    <div className='w-3 h-6 rounded-full'></div>
-                                    <span>{userProfile?.following?.length}</span>
-                                    <span>Following</span>
+                                <button className="md:hidden font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center border-r dark:border-slate-600 w-full h-full" onClick={() => dispatch({ type: "Followers" })}>
+                                    <span>{userProfile?.following.length}</span>
+                                    <span className='text-sm'>Following</span>
                                 </button>
                             </div>
                             <div className='font-lobster tracking-wider text-purple-800 dark:text-slate-200 flex flex-col items-center justify-center  w-full h-full'>
-                                { successPostProfile &&
+                                { successPostProfile && successGetUserById &&
                                     <span>{countOfPost?.length > 0 ? countOfPost.length : '0'}</span>
                                 }
                                 { loadPostProfile &&
                                     <div className='w-3 h-7 rounded-full bg-slate-300 dark:bg-gray-900'></div>
                                 }
-                                <span>Posts</span>
+                                <span className='max-md:text-sm'>Posts</span>
                             </div>
                         </div>
                     </div>

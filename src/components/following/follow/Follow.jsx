@@ -35,7 +35,7 @@ const Follower = ({ user }) => {
                             <img className='w-full h-full rounded-full object-cover' src={user?.avatar?.url} alt="user" />
                         </div>
                         <div>
-                            <h1 className='font-lobster tracking-wider text-md text-slate-600 dark:text-slate-300'>{user?.userName}</h1>
+                            <h1 className='font-lobster tracking-wider text-md text-purple-800 font-semibold dark:text-slate-300'>{`${user?.userName[0].toUpperCase()}${user?.userName.split(' ')[0].slice(1)} ${user?.userName.split(' ')[1] !== undefined ? user?.userName.split(' ')[1][0].toUpperCase() : ''}${user?.userName.split(' ')[1] !== undefined ? user?.userName.split(' ')[1].slice(1) : ''}`}</h1>
                             <div className="flex items-center gap-1">
                                 <span className='font-lobster tracking-wider text-xs text-slate-600 dark:text-slate-400'>{follow?.followers?.length}followers</span>
                                 <span className='font-lobster tracking-wider text-xs text-slate-600 dark:text-slate-400'>{follow?.following?.length}following</span>

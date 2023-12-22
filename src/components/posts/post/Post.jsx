@@ -12,8 +12,8 @@ import  moment  from "moment";
 import { listLike } from '../../../slices/postSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import ImagePost from '../../imagePost/ImagePost';
-import { Skeleton } from '@mui/material';
 import SkeletonAvatar from '../../skeleton/SkeletonAvatar';
+import SkeletonUserName from '../../skeleton/SkeletonUserName';
 const Post = ({ post, handleListConsumer, userId, suggestConsumer, deletePost }) => {
   const updateAvatar = useSelector(state => state.update);
   const settingPostRef = useRef();
@@ -75,15 +75,15 @@ const Post = ({ post, handleListConsumer, userId, suggestConsumer, deletePost })
       <div className='p-2 flex items-center justify-between'>
         <Link to={`/profile/${post?.userId?._id}`} className='flex items-center gap-1'>
           {
-            loadingGetUser && <SkeletonAvatar />
+            loadingGetUser && <SkeletonAvatar/>
           }
           {
             SuccessGetUser && <div className='w-[55px] max-lg:w-[45px] h-[55px] max-lg:h-[45px] rounded-full bg-transparent p-1 border border-purple-600'>
-            <img className='w-full h-full rounded-full object-cover' src={userAvatar?.url} alt="user" />
+              <img className='w-full h-full rounded-full object-cover' src={userAvatar?.url} alt="user" />
             </div>
           }
           <div className='flex flex-col leading-4'>
-            <span className='font-lobster tracking-widest text-purple-600 dark:text-slate-300 max-lg:text-sm'>{post?.userId?.userName}</span>
+            <span className='font-lobster tracking-widest text-purple-800 font-semibold dark:text-slate-300 max-lg:text-sm'>{`${post?.userId?.userName[0].toUpperCase()}${post?.userId?.userName.split(' ')[0].slice(1)} ${post?.userId?.userName.split(' ')[1] !== undefined ? post?.userId?.userName.split(' ')[1][0].toUpperCase() : ''}${post?.userId?.userName.split(' ')[1] !== undefined ? post?.userId?.userName.split(' ')[1].slice(1) : ''}`}</span>
             <span className='font-lobster tracking-widest text-xs max-lg:text-[10px] text-slate-500'>From: {moment(post?.createdAt).fromNow()}</span>
           </div>
         </Link>
@@ -103,7 +103,7 @@ const Post = ({ post, handleListConsumer, userId, suggestConsumer, deletePost })
           &&
           <div ref={sliderContainerRef} className="slider-container w-full max-h-full bg-white dark:bg-gray-800 overflow-hidden flex flex-col">
             <div ref={sliderRef} className="slider max-w-full flex">
-                <ImagePost images={post.imageUrl} />
+              <ImagePost images={post.imageUrl} />
             </div>
           </div>
         }

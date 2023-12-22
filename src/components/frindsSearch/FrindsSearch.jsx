@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import { useSearchFrindMutation } from '../../slices/appApiSlice';
-import { useSelector } from 'react-redux';
 import Search from './Search';
 import { suggestContext } from '../../pages/homePage/HomePage';
 import SkeletonAvatar from '../skeleton/SkeletonAvatar';
@@ -21,11 +20,20 @@ const FrindsSearch = () => {
       .catch(error => console.log(error.message));
   }
   useEffect(() => {
-    searchFriends({ userName })
+    searchFriends()
       .then(res => res.data)
-      .then(result => setFrindsSearch(result))
+      .then(result => {
+        setFrindsSearch(result)
+      })
       .catch(error => console.log(error.message));
-  }, [!userName]);
+  }, []);
+  const searchFrind = frindsSearch?.filter(user => {
+    if (userName) {
+      return user.userName.toLowerCase().indexOf(userName.toLowerCase()) !== -1
+    } else {
+      return user;
+    }
+  });
   return (
     <div className={`vacation w-full flex-1 bg-white dark:bg-gray-800 rounded-md shadow-md overflow-y-scroll scrollbar-none`}>
       <div className='sticky top-0 w-full flex flex-col gap-4 rounded-t-md bg-white dark:bg-gray-800 py-1'>
@@ -120,10 +128,15 @@ const FrindsSearch = () => {
       {
         isSuccess &&
         <div className='mt-2 flex flex-col gap-2'>
-          {
-            frindsSearch.map((user, index) => (
+            {
+              searchFrind.length ?
+            searchFrind.map((user, index) => (
               <Search key={index} user={user} suggestConsumer={suggestConsumer} />
             ))
+                :
+                <div className=' text-purple-800 text-center dark:text-slate-300 font-lobster tracking-wider'>
+                  <h1>Not Found</h1>
+                </div>
           }
         </div>
       }

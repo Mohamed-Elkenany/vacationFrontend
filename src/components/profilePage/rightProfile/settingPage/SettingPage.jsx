@@ -54,7 +54,7 @@ const SettingPage = ({ userId, suggestConsumer }) => {
         dispatch({ type: updateBanner, payload: successUploadBanner });
     }, [successUploadBanner]);
     return (
-        <div className='flex-1 bg-white dark:bg-slate-800 rounded-md shadow-md  overflow-y-scroll scrollbar-none'>
+        <div className='flex-1 bg-white dark:bg-slate-800 rounded-md shadow-md  overflow-y-scroll scrollbar-none h-full'>
             <div className='sticky top-0 bg-purple-800 dark:bg-slate-300 w-full rounded-sm' >
                 <h1 className='text-slate-200 dark:text-slate-900 text-center font-lobster tracking-widest font-semibold select-none'>Setting</h1>
             </div>

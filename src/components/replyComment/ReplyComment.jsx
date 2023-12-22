@@ -22,14 +22,14 @@ const ReplyComment = ({ comment, user, allComment, success }) => {
   const [COmment, setCommemt] = useState();
   const [editCommentInput, setEditCommentInput] = useState("");
   const submitEditComment = async (e) => {
-        e.preventDefault();
-        await updateComment({ commentId: comment._id, comment: editCommentInput })
-            .then(res => res.data)
-            .then(result => {
-              setEditComment(false);
-              setCommemt(result);
-            });
-    }
+    e.preventDefault();
+    await updateComment({ commentId: comment._id, comment: editCommentInput })
+      .then(res => res.data)
+      .then(result => {
+        setEditComment(false);
+        setCommemt(result);
+      });
+  }
   const handleLike = async () => {
     await like(comment._id)
       .then(res => res.data)
@@ -51,12 +51,12 @@ const ReplyComment = ({ comment, user, allComment, success }) => {
     })
   }, [])
   useEffect(() => {
-        getCommentById(comment._id)
-            .then(res => res.data)
-            .then(result => {
-                setCommemt(result)
-            });
-    }, [success]);
+    getCommentById(comment._id)
+      .then(res => res.data)
+      .then(result => {
+        setCommemt(result)
+      });
+  }, [success]);
   return (
     <div className="max-w-[97%] w-fit ml-6">
       {
@@ -79,14 +79,14 @@ const ReplyComment = ({ comment, user, allComment, success }) => {
         <div className='flex flex-col gap-1' >
           <div className="bg-slate-200 dark:bg-gray-700 px-1 pb-1 rounded-md w-fit">
             <div className="flex items-center gap-2">
-              <Link to={`/profile/${comment?.userId?._id}`} className='hover:underline text-purple-700 dark:text-slate-300'>
-                <h1 className='text-sm max-lg:text-xs font-lobster tracking-widest'>{comment?.userId?.userName}</h1>
+              <Link to={`/profile/${comment?.userId?._id}`} className='hover:underline text-purple-700 dark:text-slate-300 mr-3'>
+                <h1 className='text-sm max-lg:text-xs font-lobster tracking-widest whitespace-nowrap'>{`${comment?.userId?.userName?.split(" ")[0][0].toUpperCase()}${comment?.userId?.userName?.split(' ')[0].slice(1)} ${comment?.userId?.userName?.split(' ')[1] !== undefined ? comment?.userId?.userName?.split(' ')[1][0].toUpperCase() : ''}${comment?.userId?.userName?.split(' ')[1] !== undefined ? comment?.userId?.userName?.split(' ')[1].slice(1) : ''}`}</h1>
               </Link>
               {(userId === comment?.userId?._id || userId === comment?.postId?.userId) &&
                 <div className='relative text-purple-700 dark:text-slate-300 w-fit cursor-pointer'>
-                  {settingComment && <div className=' absolute bg-slate-300  dark:bg-gray-900 rounded-md top-6 right-0 z-50'>
-                    <button className={`${(userId !== comment?.userId?._id || comment?.userId?._id !== comment?.postId?.userId) && 'hidden'} text-sm max-lg:text-xs font-lobster tracking-widest whitespace-nowrap px-2 py-1 hover:bg-slate-200 hover:dark:bg-gray-800 rounded-t-md w-full`} onClick={() => setEditComment(true)}>Edit comment</button>
-                    <button className="text-sm max-lg:text-xs font-lobster tracking-widest whitespace-nowrap px-2 py-1 hover:bg-slate-200 hover:dark:bg-gray-800 rounded-b-md w-full" onClick={() => ReplyConsumer.handleDeleteComment(comment._id)}>Delete comment</button>
+                  {settingComment && <div className=' absolute bg-slate-300 dark:bg-gray-900 rounded-md top-6 right-0' onClick={() => setSettingComment(false)}>
+                    <button className={`text-sm ${(userId !== comment?.userId?._id || comment?.userId?._id !== comment?.postId?.userId)} max-lg:text-xs whitespace-nowrap px-2 py-1 hover:bg-gray-800 rounded-t-md w-full`} onClick={() => setEditComment(true)}>Edit comment</button>
+                    <button className="text-sm max-lg:text-xs whitespace-nowrap px-2 py-1 hover:bg-gray-800 rounded-b-md w-full" onClick={() => ReplyConsumer.handleDeleteComment(comment._id)}>Delete comment</button>
                   </div>}
                   <MoreHorizIcon ref={settingCommentRef} onClick={() => setSettingComment(!settingComment)} />
                 </div>
@@ -95,7 +95,7 @@ const ReplyComment = ({ comment, user, allComment, success }) => {
             <p className=' text-slate-700 dark:text-slate-400 text-sm'>{COmment?.comment}</p>
           </div>
           <div className="text-xs max-lg:text-[10px] flex items-center gap-4 text-purple-700 dark:text-slate-300 font-lobster tracking-widest">
-            <div className="flex items-center gap-1">{addLikeComment ? <ThumbUpAltIcon style={{ fontSize: '15px' }} className='LikeIcon cursor-pointer' onClick={() => handleLike()} /> : <ThumbUpOffAlt style={{ fontSize: '15px' }} className='LikeIcon cursor-pointer' onClick={() => handleLike()} />} <h1>{commentLike?.length > 0 ? commentLike?.length : ""} Like</h1></div>
+            <div className="flex items-center gap-1 whitespace-nowrap">{addLikeComment ? <ThumbUpAltIcon style={{ fontSize: '15px' }} className='LikeIcon cursor-pointer' onClick={() => handleLike()} /> : <ThumbUpOffAlt style={{ fontSize: '15px' }} className='LikeIcon cursor-pointer' onClick={() => handleLike()} />} <h1 className='whitespace-nowrap'>{commentLike?.length > 0 ? commentLike?.length : ""} Like</h1></div>
             <button className="flex items-center gap-1" onClick={() => ReplyConsumer.handleReplay({ commentId: comment._id, name: `${comment.userId.userName}` })}><ReplyOutlinedIcon style={{ fontSize: '15px' }} className='LikeIcon cursor-pointer' onClick={() => setAddLikeComment(false)} /><h1>Reply</h1></button>
             <div className="flex items-center gap-1 flex-nowrap "><h1>From:</h1> <span className=' whitespace-nowrap'>{moment(comment?.createdAt).fromNow().split(" ").splice(0, 1).concat(moment(comment?.createdAt).fromNow().split(" ").slice(1, 2).join("").slice(0, 1))}</span></div>
           </div>

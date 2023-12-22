@@ -7,7 +7,7 @@ import LoopIcon from '@mui/icons-material/Loop';
 const SuggestFirend = ({suggestConsumer}) => {
   const user = JSON.parse(localStorage.getItem("userInfo"));
   const [suggest, setSuggest] = useState([]);
-  const [Suggest, { isSuccess, isLoading, isError }] = useSuggestUserMutation();
+  const [Suggest, { isSuccess: reloadSuggestIsSuccess, isLoading, isError }] = useSuggestUserMutation();
   const handleReloadSuggest = async () => {
     await Suggest(user)
       .then(res => res.data)
@@ -111,12 +111,12 @@ const SuggestFirend = ({suggestConsumer}) => {
         </div>
       }
       {
-        isSuccess
+        reloadSuggestIsSuccess
         &&
         <div className="flex flex-col gap-3">
         {
           suggest.map((user, index) => (
-            <SuggestFr user={user} key={index} suggestConsumer={suggestConsumer} />
+            <SuggestFr user={user} key={index} suggestConsumer={suggestConsumer} reloadSuggestIsSuccess={reloadSuggestIsSuccess} />
           ))
         }
       </div>

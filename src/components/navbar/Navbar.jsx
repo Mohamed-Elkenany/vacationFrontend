@@ -96,7 +96,7 @@ const Navbar = ({ socket }) => {
       });
   }, [updateAV.updateAvatarInfo, updateAV.updateAvatar, updateAV.deleteAvatar]);
   return (
-    <div className='bg-white dark:bg-gray-800 w-full z-[999] sticky top-0 max-md:-top-8 left-0 shadow-md px-2 py-1'>
+    <div className='navbar bg-white dark:bg-gray-800 w-full z-[999] sticky top-0 max-md:-top-8 left-0 shadow-md px-2 py-1'>
       <div className={`absolute bg-white dark:bg-gray-800 ${viewProfile ? 'active' : 'inActive'} transform duration-200 right-16 bg-white dark:bg-gray-800 rounded-sm dark:text-slate-300 text-purple-700 font-lobster tracking-widest text-sm`}>
         <ul onClick={() => setViewProfile(false)}>
           <li className=''><Link to={`/profile/${user?._id}`} className=' w-full h-full px-2 py-2 hover:bg-purple-700 hover:text-slate-300 hover:dark:bg-gray-950 flex items-center gap-1 border-b dark:border-gray-5 rounded-t-sm'><VisibilityOutlinedIcon fontSize='inherit' />View Profile</Link></li>
@@ -120,8 +120,14 @@ const Navbar = ({ socket }) => {
             }
           </div>
           <div className='flex-1 flex items-center md:justify-center md:gap-10 max-md:justify-around max-md:gap-0 gap-14 text-purple-700 dark:text-slate-300'>
-            <Link to="/"><CottageOutlinedIcon /></Link>
-            <div className='relative w-fit'>
+            <Link to="/">
+              <div className='homePageIcon relative w-fit'>
+                <span className='text-xs text-slate-100 whitespace-nowrap absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-800 dark:bg-gray-900 px-1 rounded-full opacity-0 invisible duration-200'>Home Page</span>
+                <CottageOutlinedIcon />
+              </div>
+            </Link>
+            <div className='NotificationIcon relative w-fit'>
+              <span className='text-xs text-slate-100 whitespace-nowrap absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-800 dark:bg-gray-900 px-1 rounded-full opacity-0 invisible duration-200'>Notification</span>
               {
                 notificationCount.length > 0 && <div className="absolute -top-2 -right-3 text-sm bg-purple-700 dark:bg-slate-300 text-slate-300 dark:text-gray-950 text-center w-5 h-5 rounded-full">{notificationCount?.length}</div>
               }
@@ -132,7 +138,12 @@ const Navbar = ({ socket }) => {
                   <button ref={buttonIconRef} onClick={handleNotification} className='flex items-center justify-center'><NotificationsActiveIcon ref={iconNotifcationRef} /></button>
               }
             </div>
-            <Link to={`/add-post/${user?._id}`}><AddIcon /></Link>
+            <Link to={`/add-post/${user?._id}`}>
+              <div className='AddPostIcon relative w-fit'>
+                <span className='text-xs text-slate-100 whitespace-nowrap absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-800 dark:bg-slate-900 px-1 rounded-full opacity-0 invisible duration-200'>Add Post</span>
+                <AddIcon />
+              </div>
+            </Link>
           </div>
           <div className='md:flex-[2] max-md:hidden flex items-center justify-center max-md:justify-start'>
             <Link to="/" className='text-purple-700 dark:text-slate-300 text-2xl font-lobster font-semibold tracking-wider max-md:hidden'>Vacation</Link>
@@ -173,7 +184,7 @@ const Navbar = ({ socket }) => {
                   </div>
                 }
                 <div className="flex flex-col">
-                  <h1 className='max-lg:hidden font-lobster tracking-wider text-purple-800 dark:text-slate-300'>{user?.userName}</h1>
+                  <h1 className='max-lg:hidden font-lobster tracking-wider text-purple-800 dark:text-slate-300'>{`${user?.userName?.split(" ")[0][0].toUpperCase()}${user?.userName?.split(" ")[0].slice(1)} ${user?.userName?.split(" ")[1] ? user?.userName?.split(" ")[1][0].toUpperCase() : ""}${user?.userName?.split(" ")[1] ? user?.userName?.split(' ')[1].slice(1) : ""}`}</h1>
                   <h1 className='max-lg:hidden font-lobster tracking-wider text-slate-300 dark:text-slate-500 text-xs'>{user?.email}</h1>
                 </div>
               </div>

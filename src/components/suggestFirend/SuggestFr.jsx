@@ -4,18 +4,23 @@ import Button from '../button/Button';
 import { useGetUserByIdMutation } from '../../slices/appApiSlice';
 import SkeletonAvatar from '../skeleton/SkeletonAvatar';
 import SkeletonUserName from '../skeleton/SkeletonUserName';
-const SuggestFr = ({ user, suggestConsumer }) => {
+const SuggestFr = ({ user, suggestConsumer, reloadSuggestIsSuccess }) => {
     const [getUserById, { isLoading, isSuccess }] = useGetUserByIdMutation();
-    const [follow, setFollow] = useState(user);
+    const [followers, setFollowers] = useState([]);
+    const [following, setFollowing] = useState([]);
     const [userSuggest, setUserSuggest] = useState();
     const setUser = (updateUser) => {
-        setFollow(updateUser)
+        setFollowers(updateUser.followers)
     }
     useEffect(() => {
         getUserById(user._id)
             .then(res => res.data)
-            .then(result => setUserSuggest(result));
-    }, [])
+            .then(result => {
+                setUserSuggest(result)
+                setFollowers(result.followers)
+                setFollowing(result.following)
+            });
+    }, [reloadSuggestIsSuccess])
     return (
         <div className='px-2 flex items-center justify-between'>
             <Link to={`/profile/${userSuggest?._id}`} className='flex items-center gap-1'>
@@ -41,11 +46,11 @@ const SuggestFr = ({ user, suggestConsumer }) => {
                 {
                     isSuccess
                     &&
-                    <div>
-                        <h1 className='font-lobster tracking-wider text-md text-slate-600 dark:text-slate-300'>{userSuggest?.userName}</h1>
+                    <div className='pr-4'>
+                        <h1 className='font-lobster tracking-wider text-md text-purple-800 font-semibold whitespace-nowrap dark:text-slate-300 max-lg:text-sm'>{`${userSuggest?.userName[0].toUpperCase()}${userSuggest?.userName.split(' ')[0].slice(1)} ${userSuggest?.userName.split(' ')[1] !== undefined ? userSuggest?.userName.split(' ')[1][0].toUpperCase() : ''}${userSuggest?.userName.split(' ')[1] !== undefined ? userSuggest?.userName.split(' ')[1].slice(1) : ''}`}</h1>
                         <div className="flex items-center gap-1">
-                            <span className='font-lobster tracking-wider text-xs text-slate-600 dark:text-slate-400'>{follow?.followers?.length} follower</span>
-                            <span className='font-lobster tracking-wider text-xs text-slate-600 dark:text-slate-400'>{follow?.following?.length} following</span>
+                            <span className='font-lobster tracking-wider text-xs text-slate-600 dark:text-slate-400'>{followers.length} follower</span>
+                            <span className='font-lobster tracking-wider text-xs text-slate-600 dark:text-slate-400'>{following.length} following</span>
                         </div>
                     </div>
                 }

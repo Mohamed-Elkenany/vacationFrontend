@@ -87,7 +87,7 @@ const PostProfile = ({ post, handleListConsumer, suggestConsumer, deletePost }) 
                         </div>
                     }
                     <div className='flex flex-col leading-4'>
-                        <span className='font-lobster tracking-widest text-purple-600 dark:text-slate-300 max-lg:text-sm'>{post?.userId?.userName}</span>
+                        <span className='font-lobster tracking-widest text-purple-800 font-semibold dark:text-slate-300 max-lg:text-sm'>{post?.userId?.userName}</span>
                         <span className='font-lobster tracking-widest text-xs max-lg:text-[10px] text-slate-500'>From: {moment(post?.createdAt).fromNow()}</span>
                     </div>
                 </Link>
