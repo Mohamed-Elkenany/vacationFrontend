@@ -1,7 +1,7 @@
 import {  createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const appApiSlice = createApi({
     reducerPath: "appApi",
-    baseQuery: fetchBaseQuery({ baseUrl: "https://vacation-back-api.vercel.app" }),
+    baseQuery: fetchBaseQuery({ baseUrl: process.env.API_KEY }),
     endpoints: builder => ({
         register: builder.mutation({
             query: user => ({
